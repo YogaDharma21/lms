@@ -4,7 +4,7 @@ import { useState } from "react";
 import PricingPage from "./pricing";
 
 export default function SignUpPage() {
-    const [mode, setMode] = useState("PRICING");
+    const [mode, setMode] = useState("AUTH");
     return (
         <>
             {mode === "AUTH" ? (
