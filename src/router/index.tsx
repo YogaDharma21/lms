@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router";
 import ManagerHome from "../pages/manager/home";
-import SignInPage from "./SignIn";
-import SignUpPage from "./SignUp";
-import SuccessCheckoutPage from "./SuccessCheckout";
+import SignInPage from "../pages/SignIn";
+import SignUpPage from "../pages/SignUp";
+import SuccessCheckoutPage from "../pages/SuccessCheckout";
 
 const router = createBrowserRouter([
     {
