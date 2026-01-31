@@ -25,6 +25,12 @@ const router = createBrowserRouter([
     {
         path: "/manager/",
         element: <LayoutDashboard />,
+        children: [
+            {
+                index: true,
+                element: <ManagerHome />,
+            },
+        ],
     },
 ]);
 export default router;
