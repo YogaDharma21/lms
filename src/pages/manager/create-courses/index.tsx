@@ -15,9 +15,9 @@ export default function ManageCreateCoursePage() {
                 <div className="flex items-center gap-3">
                     <Link
                         className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        to="#"
+                        to="/manager/courses"
                     >
-                        Import from BWA
+                        Back To Course List
                     </Link>
                 </div>
             </header>

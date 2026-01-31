@@ -6,6 +6,7 @@ import SuccessCheckoutPage from "../pages/SuccessCheckout";
 import LayoutDashboard from "../components/Layout";
 import ManageCoursePage from "../pages/manager/courses";
 import ManageCreateCoursePage from "../pages/manager/create-courses";
+import ManageCourseDetailPage from "../pages/manager/course-detail";
 
 const router = createBrowserRouter([
     {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
             {
                 path: "/manager/courses/create",
                 element: <ManageCreateCoursePage />,
+            },
+            {
+                path: "/manager/courses/:id",
+                element: <ManageCourseDetailPage />,
             }
         ],
     },

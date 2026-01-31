@@ -15,12 +15,6 @@ export default function ManageCoursePage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Link
-                        className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        to="#"
-                    >
-                        Import File
-                    </Link>
-                    <Link
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                         to="/manager/courses/create"
                     >
