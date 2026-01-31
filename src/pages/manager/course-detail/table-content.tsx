@@ -13,7 +13,7 @@ export default function TableContent() {
                         Course Content
                     </h2>
                     <Link
-                        to="#"
+                        to="/manager/courses/1/create"
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
                         Add Content
