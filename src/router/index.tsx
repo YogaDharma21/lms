@@ -3,23 +3,28 @@ import ManagerHome from "../pages/manager/home";
 import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
 import SuccessCheckoutPage from "../pages/SuccessCheckout";
+import LayoutDashboard from "../components/Layout";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <ManagerHome />
+        element: <ManagerHome />,
     },
     {
         path: "/manager/sign-in",
-        element: <SignInPage />
+        element: <SignInPage />,
     },
     {
         path: "/manager/sign-up",
-        element: <SignUpPage />
+        element: <SignUpPage />,
     },
     {
         path: "/success-checkout",
-        element: <SuccessCheckoutPage />
-    }
-])
+        element: <SuccessCheckoutPage />,
+    },
+    {
+        path: "/manager/",
+        element: <LayoutDashboard />,
+    },
+]);
 export default router;
