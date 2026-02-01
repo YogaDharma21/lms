@@ -21,7 +21,7 @@ export default function ManageStudentsPage() {
                         Import File
                     </Link>
                     <Link
-                        to="#"
+                        to="/manager/students/create"
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
                         Add Student
