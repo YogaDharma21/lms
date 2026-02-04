@@ -1,7 +1,29 @@
-import { Link } from "react-router"
-import Navbar from "../../components/Navbar"
+import { Link } from "react-router";
+import Navbar from "../../components/Navbar";
+import { useMutation } from "@tanstack/react-query";
+import { postSignUp } from "../../services/authService";
 
-export default function PricingPage() {
+export default function PricingPage({
+    data,
+}: {
+    data: { name: string; email: string; password: string } | null;
+}) {
+    const { isPending, mutateAsync } = useMutation({
+        mutationFn: (signupData: { name: string; email: string; password: string }) => postSignUp(signupData),
+    });
+
+    const submitData = async () => {
+        try {
+            if (!data) {
+                return;
+            }
+            const response = await mutateAsync(data);
+            window.location.replace(response?.data?.midtrans_payment_url);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className="relative flex flex-col flex-1 p-[10px]">
             <div className="absolute w-[calc(100%-20px)] min-h-[calc(100vh-20px)] h-[calc(100%-20px)] bg-[#060A23] -z-10 rounded-[20px]">
@@ -16,7 +38,9 @@ export default function PricingPage() {
                 <div className="flex items-center gap-3">
                     <Link to="/manager/sign-in">
                         <div className="flex items-center gap-3 w-fit rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                            <span className="font-semibold text-white">Sign In</span>
+                            <span className="font-semibold text-white">
+                                Sign In
+                            </span>
                         </div>
                     </Link>
                 </div>
@@ -42,7 +66,9 @@ export default function PricingPage() {
                         <p className="font-extrabold text-[46px] leading-[69px] text-white">
                             Rp 80.000
                         </p>
-                        <p className="text-[#6B6C7F] mt-[6px]">Billed every single month</p>
+                        <p className="text-[#6B6C7F] mt-[6px]">
+                            Billed every single month
+                        </p>
                     </div>
                     <hr className="border-[#262A56]" />
                     <div className="flex flex-col gap-5">
@@ -69,13 +95,15 @@ export default function PricingPage() {
                     </div>
                     <hr className="border-[#262A56]" />
                     <p className="text-[#FF435A]">
-                        This plan is not available at this moment in your country, try again
-                        later.
+                        This plan is not available at this moment in your
+                        country, try again later.
                     </p>
                     <div className="flex flex-col gap-3">
                         <Link to="#">
                             <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
-                                <span className="font-semibold text-white">Contact Our Sales</span>
+                                <span className="font-semibold text-white">
+                                    Contact Our Sales
+                                </span>
                             </div>
                         </Link>
                     </div>
@@ -90,7 +118,9 @@ export default function PricingPage() {
                         <p className="font-extrabold text-[46px] leading-[69px] text-white">
                             Rp 280.000
                         </p>
-                        <p className="text-[#6B6C7F] mt-[6px]">Billed every single month</p>
+                        <p className="text-[#6B6C7F] mt-[6px]">
+                            Billed every single month
+                        </p>
                     </div>
                     <hr className="border-[#262A56]" />
                     <div className="flex flex-col gap-5">
@@ -147,20 +177,31 @@ export default function PricingPage() {
                     </div>
                     <hr className="border-[#262A56]" />
                     <div className="flex flex-col gap-3">
-                        <Link to="#">
+                        {isPending ? (
                             <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                                <span className="font-semibold text-white">Choose This Plan</span>
+                                <span className="font-semibold text-white">
+                                    Choosing this plan...
+                                </span>
                             </div>
-                        </Link>
+                        ) : (
+                        <button type="button" onClick={submitData} disabled={isPending}>
+                            <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                                <span className="font-semibold text-white">
+                                    Choose This Plan
+                                </span>
+                            </div>
+                        </button>
+                        )}
                         <Link to="#">
                             <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
-                                <span className="font-semibold text-white">Contact Our Sales</span>
+                                <span className="font-semibold text-white">
+                                    Contact Our Sales
+                                </span>
                             </div>
                         </Link>
                     </div>
                 </div>
             </div>
         </div>
-
-    )
+    );
 }
