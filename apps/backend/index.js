@@ -29,5 +29,5 @@ app.use("/api", paymentRoutes);
 app.use("/api", authRoutes);
 
 app.listen(port, () => {
-    console.log("LMS Backend listening on port 3000");
+    console.log(`LMS Backend listening on port ${port}`);
 });
