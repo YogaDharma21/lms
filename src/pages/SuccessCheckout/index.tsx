@@ -3,8 +3,8 @@ import Navbar from "../../components/Navbar"
 
 export default function SuccessCheckoutPage() {
     return (
-        <div className="relative flex flex-col flex-1 p-[10px]">
-            <div className="absolute w-[calc(100%-20px)] min-h-[calc(100vh-20px)] h-[calc(100%-20px)] bg-[#060A23] -z-10 rounded-[20px]">
+        <div className="relative flex flex-col flex-1">
+            <div className="absolute inset-0 bg-[#060A23] -z-10 rounded-none h-screen">
                 <img
                     src="/assets/images/backgrounds/background-glow.png"
                     className="absolute bottom-0 transform -translate-x-1/2 left-1/2"
