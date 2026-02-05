@@ -25,8 +25,8 @@ export default function PricingPage({
     };
 
     return (
-        <div className="relative flex flex-col flex-1 p-[10px]">
-            <div className="absolute w-[calc(100%-20px)] min-h-[calc(100vh-20px)] h-[calc(100%-20px)] bg-[#060A23] -z-10 rounded-[20px]">
+        <div className="relative flex flex-col min-h-screen">
+            <div className="absolute inset-0 bg-[#060A23] -z-10">
                 <img
                     src="/assets/images/backgrounds/background-glow.png"
                     className="absolute bottom-0 transform -translate-x-1/2 left-1/2"
@@ -55,7 +55,7 @@ export default function PricingPage({
                     We delivery robust features to anyone unconditionally.
                 </p>
             </header>
-            <div className="grid grid-cols-2 gap-[30px] max-w-[840px] mx-auto mt-[60px]">
+            <div className="grid grid-cols-2 gap-[30px] max-w-[840px] mx-auto mt-[60px] pb-[30px]">
                 <div className="card flex flex-col h-fit rounded-[20px] border border-[#262A56] p-[30px] gap-[30px] bg-[#080A2A]">
                     <img
                         src="/assets/images/icons/note-favorite-white.svg"
