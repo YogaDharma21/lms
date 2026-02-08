@@ -1,0 +1,28 @@
+meta {
+  name: Update Course
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/api/courses/6986b344dc50d434d8581f18
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjk4MjllODUxNjBlMWRjM2UwM2MzNWYxIn0sImlhdCI6MTc3MDUxNzk3MywiZXhwIjoxNzcwNjA0MzczfQ.bBZJxMiwUBqv3iJ2lYEW87IcXELVms8hWxJDGB-6TfA
+}
+
+body:multipart-form {
+  name: asnkasdasndasdk
+  categoryId: 697ebce241d7ea81f7f26b8e
+  tagline: Learn JS SImple
+  description: ini deskripsi aja sih
+  thumbnail: @file(C:\Users\YogaDharma\Pictures\Screenshots\Screenshot 2026-02-03 072209.png)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
