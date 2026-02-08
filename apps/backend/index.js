@@ -7,7 +7,7 @@ import globalRoutes from "./routes/globalRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import connectDB from "./utils/database.js";
-import courseRoutes from "./routes/courseRoute.js";
+import courseRoutes from "./routes/courseRoutes.js";
 
 const app = express();
 
