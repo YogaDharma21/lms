@@ -1,3 +1,7 @@
 node_modules
 .env
 !.env.example
+public/uploads/*
+!public/uploads/courses/
+public/uploads/courses/*
+!public/uploads/courses/.gitkeep
