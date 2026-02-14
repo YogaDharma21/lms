@@ -6,6 +6,7 @@ import {
     postCourse,
     updateCourse,
     getCategories,
+    getCourseById,
 } from "../controllers/courseController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { fileFilter, fileStorageCourse } from "../utils/multer.js";
@@ -19,6 +20,7 @@ const upload = multer({
 
 courseRoutes.get("/courses", verifyToken, getCourses);
 courseRoutes.get("/categories", verifyToken, getCategories);
+courseRoutes.get("/courses/:id", verifyToken, getCourseById);
 
 courseRoutes.post(
     "/courses",
