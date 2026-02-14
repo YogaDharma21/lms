@@ -1,12 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import { createCourseSchema } from "../../../utils/zodSchema";
 import { useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createCourse } from "../../../services/courseService";
 
 export default function ManageCreateCoursePage() {
     const categories = useLoaderData();
-
     const {
         register,
         handleSubmit,
@@ -16,6 +17,8 @@ export default function ManageCreateCoursePage() {
     } = useForm({
         resolver: zodResolver(createCourseSchema),
     });
+
+    const navigate = useNavigate();
 
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -33,8 +36,27 @@ export default function ManageCreateCoursePage() {
 
     const thumbnail = watch("thumbnail");
 
-    const onSubmit = (data: any) => {
-        console.log(data);
+    const { isPending, mutateAsync } = useMutation({
+        mutationFn: (data: FormData) => createCourse(data),
+    });
+
+    const onSubmit = async (values: any) => {
+        console.log(values);
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            if (file) {
+                formData.append("thumbnail", file);
+            }
+            formData.append("tagline", values.tagline);
+            formData.append("categoryId", values.categoryId);
+            formData.append("description", values.description);
+
+            await mutateAsync(formData);
+            navigate("/manager/courses");
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <>
@@ -183,8 +205,11 @@ export default function ManageCreateCoursePage() {
                                 Choose one category
                             </option>
                             {categories?.data.map(
-                                (item: { id: number; name: string }) => (
-                                    <option key={item.id} value={item.id}>
+                                (item: { _id: number; name: string }) => (
+                                    <option
+                                        key={item._id}
+                                        value={String(item._id)}
+                                    >
                                         {item.name}
                                     </option>
                                 ),
@@ -229,12 +254,23 @@ export default function ManageCreateCoursePage() {
                     >
                         Save as Draft
                     </button>
-                    <button
-                        className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
-                        type="submit"
-                    >
-                        Create Now
-                    </button>
+                    {isPending ? (
+                        <button
+                            className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
+                            type="submit"
+                            disabled={isPending}
+                        >
+                            Creating...
+                        </button>
+                    ) : (
+                        <button
+                            className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
+                            type="submit"
+                            disabled={isPending}
+                        >
+                            Create Now
+                        </button>
+                    )}
                 </div>
             </form>
         </>
