@@ -1,6 +1,8 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 export default function ManageCreateCoursePage() {
+    const categories = useLoaderData();
+    console.log(categories);
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -21,9 +23,7 @@ export default function ManageCreateCoursePage() {
                     </Link>
                 </div>
             </header>
-            <form
-                className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
-            >
+            <form className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]">
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="title">
                         Course Name
@@ -130,9 +130,16 @@ export default function ManageCreateCoursePage() {
                             <option hidden value="">
                                 Choose one category
                             </option>
-                            <option value="">test</option>
-                            <option value="">test</option>
-                            <option value="">test</option>
+                            {categories?.data.map(
+                                (item: { id: number; name: string }) => (
+                                    <option
+                                        key={item.id}
+                                        value={item.id}
+                                    >
+                                        {item.name}
+                                    </option>
+                                ),
+                            )}
                         </select>
                         <img
                             alt="icon"

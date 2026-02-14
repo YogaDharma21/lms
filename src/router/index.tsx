@@ -14,6 +14,7 @@ import ManageCoursePreviewPage from "../pages/manager/course-preview";
 import ManageStudentsPage from "../pages/manager/students";
 import StudentPage from "../pages/student/StudentOverview";
 import ManageStudentCreatePage from "../pages/manager/students-create";
+import { getCategories, getCourse } from "../services/courseService";
 
 interface Session {
     role: string;
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
             if (!session || session.role !== "manager") {
                 throw redirect("/manager/sign-in");
             }
-
+            console.log("session loader", session);
             return session;
         },
         element: <LayoutDashboard isAdmin={true} />,
@@ -57,11 +58,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/courses",
+                loader: async () => {
+                    const data = await getCourse();
+                    return data;
+                },
                 element: <ManageCoursePage />,
             },
             {
                 path: "/manager/courses/create",
                 element: <ManageCreateCoursePage />,
+                loader: async () => {
+                    const categories = await getCategories();
+                    return categories;
+                },
             },
             {
                 path: "/manager/courses/:id",
