@@ -1,8 +1,23 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Link, useLoaderData } from "react-router";
+import { createCourseSchema } from "../../../utils/zodSchema";
 
 export default function ManageCreateCoursePage() {
     const categories = useLoaderData();
-    console.log(categories);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(createCourseSchema),
+    });
+
+    const onSubmit = (data: any) => {
+        console.log(data);
+    };
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -23,7 +38,10 @@ export default function ManageCreateCoursePage() {
                     </Link>
                 </div>
             </header>
-            <form className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]">
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
+            >
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="title">
                         Course Name
@@ -37,12 +55,14 @@ export default function ManageCreateCoursePage() {
                         <input
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="title"
-                            name="title"
                             placeholder="Write better name for your course"
-                            required
                             type="text"
+                            {...register("name")}
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.name?.message}
+                    </span>
                 </div>
                 <div className="relative flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="thumbnail">
@@ -88,10 +108,12 @@ export default function ManageCreateCoursePage() {
                         accept="image/*"
                         className="absolute bottom-0 left-1/4 -z-10"
                         id="thumbnail"
-                        name="thumbnail"
-                        required
                         type="file"
+                        {...register("thumbnail")}
                     />
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.thumbnail?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="tagline">
@@ -106,11 +128,14 @@ export default function ManageCreateCoursePage() {
                         <input
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="tagline"
-                            name="tagline"
                             placeholder="Write tagline for better copy"
                             type="text"
+                            {...register("tagline")}
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.tagline?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="category">
@@ -126,16 +151,14 @@ export default function ManageCreateCoursePage() {
                             className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="category"
                             name="category"
+                            {...register("categoryId")}
                         >
                             <option hidden value="">
                                 Choose one category
                             </option>
                             {categories?.data.map(
                                 (item: { id: number; name: string }) => (
-                                    <option
-                                        key={item.id}
-                                        value={item.id}
-                                    >
+                                    <option key={item.id} value={item.id}>
                                         {item.name}
                                     </option>
                                 ),
@@ -147,12 +170,15 @@ export default function ManageCreateCoursePage() {
                             src="/assets/images/icons/arrow-down.svg"
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.categoryId?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="desc">
                         Description
                     </label>
-                    <div className="flex w-full rounded-[20px] border border-[#CFDBEF] gap-3 p-5  transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF] ring-2 ring-[#FF435A]">
+                    <div className="flex w-full rounded-[20px] border border-[#CFDBEF] gap-3 p-5  transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
                         <img
                             alt="icon"
                             className="w-6 h-6"
@@ -161,19 +187,19 @@ export default function ManageCreateCoursePage() {
                         <textarea
                             className="appearance-none outline-none w-full font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="desc"
-                            name="desc"
                             placeholder="Explain what this course about"
                             rows="5"
+                            {...register("description")}
                         />
                     </div>
                     <span className="error-message text-[#FF435A]">
-                        The description is required
+                        {errors?.description?.message}
                     </span>
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
                         className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        type="submit"
+                        type="button"
                     >
                         Save as Draft
                     </button>
