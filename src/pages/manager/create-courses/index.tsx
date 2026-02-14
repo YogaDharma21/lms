@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link, useLoaderData } from "react-router";
 import { createCourseSchema } from "../../../utils/zodSchema";
+import { useRef, useState } from "react";
 
 export default function ManageCreateCoursePage() {
     const categories = useLoaderData();
@@ -11,9 +12,26 @@ export default function ManageCreateCoursePage() {
         handleSubmit,
         formState: { errors },
         setValue,
+        watch,
     } = useForm({
         resolver: zodResolver(createCourseSchema),
     });
+
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const inputFileRef = useRef<HTMLInputElement>(null);
+
+    const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFile(file);
+            setValue("thumbnail", file, { shouldValidate: true });
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const thumbnail = watch("thumbnail");
 
     const onSubmit = (data: any) => {
         console.log(data);
@@ -73,9 +91,9 @@ export default function ManageCreateCoursePage() {
                         id="thumbnail-preview-container"
                     >
                         <button
-                            className="absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0"
+                            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0 ${previewUrl ? "hidden" : ""}`}
                             id="trigger-input"
-                            onclick="document.getElementById('thumbnail').click()"
+                            onClick={() => inputFileRef?.current?.click()}
                             type="button"
                         >
                             <img
@@ -89,14 +107,22 @@ export default function ManageCreateCoursePage() {
                         </button>
                         <img
                             alt="thumbnail"
-                            className="w-full h-full object-cover hidden"
+                            className={`w-full h-full object-cover ${previewUrl ? "block" : "hidden"}`}
                             id="thumbnail-preview"
-                            src=""
+                            src={previewUrl || ""}
                         />
                         <button
-                            className="absolute right-[10px] bottom-[10px] w-12 h-12 rounded-full z-10 hidden"
+                            className={`absolute right-[10px] bottom-[10px] w-12 h-12 rounded-full z-10 ${previewUrl ? "block" : "hidden"}`}
                             id="delete-preview"
                             type="button"
+                            onClick={() => {
+                                setFile(null);
+                                setPreviewUrl(null);
+                                setValue("thumbnail", null as any);
+                                if (inputFileRef.current) {
+                                    inputFileRef.current.value = "";
+                                }
+                            }}
                         >
                             <img
                                 alt="delete"
@@ -105,14 +131,15 @@ export default function ManageCreateCoursePage() {
                         </button>
                     </div>
                     <input
+                        ref={inputFileRef}
                         accept="image/*"
-                        className="absolute bottom-0 left-1/4 -z-10"
+                        className="hidden"
                         id="thumbnail"
                         type="file"
-                        {...register("thumbnail")}
+                        onChange={handleThumbnailChange}
                     />
                     <span className="error-message text-[#FF435A]">
-                        {errors?.thumbnail?.message}
+                        {errors?.thumbnail?.message as string}
                     </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
@@ -150,7 +177,6 @@ export default function ManageCreateCoursePage() {
                         <select
                             className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="category"
-                            name="category"
                             {...register("categoryId")}
                         >
                             <option hidden value="">
@@ -188,7 +214,7 @@ export default function ManageCreateCoursePage() {
                             className="appearance-none outline-none w-full font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="desc"
                             placeholder="Explain what this course about"
-                            rows="5"
+                            rows={5}
                             {...register("description")}
                         />
                     </div>
