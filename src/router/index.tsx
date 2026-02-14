@@ -14,7 +14,11 @@ import ManageCoursePreviewPage from "../pages/manager/course-preview";
 import ManageStudentsPage from "../pages/manager/students";
 import StudentPage from "../pages/student/StudentOverview";
 import ManageStudentCreatePage from "../pages/manager/students-create";
-import { getCategories, getCourse } from "../services/courseService";
+import {
+    getCategories,
+    getCourse,
+    getCourseDetail,
+} from "../services/courseService";
 
 interface Session {
     role: string;
@@ -69,8 +73,22 @@ const router = createBrowserRouter([
                 element: <ManageCreateCoursePage />,
                 loader: async () => {
                     const categories = await getCategories();
-                    return categories;
+                    return { categories, course: null };
                 },
+            },
+            {
+                path: "/manager/courses/edit/:id",
+                loader: async ({ params }) => {
+                    const categories = await getCategories();
+                    const course = await getCourseDetail(
+                        params.id as string,
+                        true,
+                    );
+                    console.log("course detail", course);
+
+                    return { categories, course: course.data };
+                },
+                element: <ManageCreateCoursePage />,
             },
             {
                 path: "/manager/courses/:id",

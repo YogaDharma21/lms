@@ -1,7 +1,8 @@
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import TableContent from "./table-content";
 
 export default function ManageCourseDetailPage() {
+    const { id } = useParams();
     return (
         <>
             <div
@@ -27,7 +28,7 @@ export default function ManageCourseDetailPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Link
-                        to="#"
+                        to={`/manager/courses/edit/${id}`}
                         className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
                     >
                         Edit Course

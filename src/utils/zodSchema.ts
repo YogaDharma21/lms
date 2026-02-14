@@ -20,3 +20,7 @@ export const createCourseSchema = z.object({
             message: "Thumbnail is required",
         }),
 });
+
+export const updateCourseSchema = createCourseSchema.partial({
+    thumbnail: true,
+});

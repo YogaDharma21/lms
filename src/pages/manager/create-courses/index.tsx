@@ -1,13 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link, useLoaderData, useNavigate } from "react-router";
-import { createCourseSchema } from "../../../utils/zodSchema";
-import { useRef, useState } from "react";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router";
+import {
+    createCourseSchema,
+    updateCourseSchema,
+} from "../../../utils/zodSchema";
+import { useRef, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createCourse } from "../../../services/courseService";
+import { createCourse, updateCourse } from "../../../services/courseService";
 
 export default function ManageCreateCoursePage() {
-    const categories = useLoaderData();
+    const data = useLoaderData();
+    const { id } = useParams();
     const {
         register,
         handleSubmit,
@@ -15,7 +19,15 @@ export default function ManageCreateCoursePage() {
         setValue,
         watch,
     } = useForm({
-        resolver: zodResolver(createCourseSchema),
+        resolver: zodResolver(
+            data.course === null ? createCourseSchema : updateCourseSchema,
+        ),
+        defaultValues: {
+            name: data?.course?.name,
+            tagline: data?.course?.tagline,
+            categoryId: data?.course?.category?._id,
+            description: data?.course?.description,
+        },
     });
 
     const navigate = useNavigate();
@@ -23,6 +35,12 @@ export default function ManageCreateCoursePage() {
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const inputFileRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (data?.course?.thumbnail_url) {
+            setPreviewUrl(data.course.thumbnail_url);
+        }
+    }, [data]);
 
     const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -36,8 +54,12 @@ export default function ManageCreateCoursePage() {
 
     const thumbnail = watch("thumbnail");
 
-    const { isPending, mutateAsync } = useMutation({
+    const mutateCreate = useMutation({
         mutationFn: (data: FormData) => createCourse(data),
+    });
+
+    const mutateUpdate = useMutation({
+        mutationFn: (data: FormData) => updateCourse(data, id as string),
     });
 
     const onSubmit = async (values: any) => {
@@ -52,7 +74,12 @@ export default function ManageCreateCoursePage() {
             formData.append("categoryId", values.categoryId);
             formData.append("description", values.description);
 
-            await mutateAsync(formData);
+            if (data.course === null) {
+                await mutateCreate.mutateAsync(formData);
+            } else {
+                await mutateUpdate.mutateAsync(formData);
+            }
+
             navigate("/manager/courses");
         } catch (error) {
             console.log(error);
@@ -204,7 +231,7 @@ export default function ManageCreateCoursePage() {
                             <option hidden value="">
                                 Choose one category
                             </option>
-                            {categories?.data.map(
+                            {data?.categories?.data.map(
                                 (item: { _id: number; name: string }) => (
                                     <option
                                         key={item._id}
@@ -254,23 +281,17 @@ export default function ManageCreateCoursePage() {
                     >
                         Save as Draft
                     </button>
-                    {isPending ? (
-                        <button
-                            className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
-                            type="submit"
-                            disabled={isPending}
-                        >
-                            Creating...
-                        </button>
-                    ) : (
-                        <button
-                            className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
-                            type="submit"
-                            disabled={isPending}
-                        >
-                            Create Now
-                        </button>
-                    )}
+                    <button
+                        className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
+                        type="submit"
+                        disabled={
+                            data?.course === null
+                                ? mutateCreate.isPending
+                                : mutateUpdate.isPending
+                        }
+                    >
+                        Create Now
+                    </button>
                 </div>
             </form>
         </>
