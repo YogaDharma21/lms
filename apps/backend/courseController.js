@@ -305,3 +305,18 @@ export const updateContentCourse = async (req, res) => {
         });
     }
 };
+
+export const deleteContentCourse = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await courseDetailModel.findByIdAndDelete(id);
+        return res.json({
+            message: "Delete Content Success",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+};
