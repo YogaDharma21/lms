@@ -8,6 +8,7 @@ import {
     getCategories,
     getCourseById,
     postContentCourse,
+    updateContentCourse,
 } from "../controllers/courseController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { fileFilter, fileStorageCourse } from "../utils/multer.js";
@@ -46,6 +47,13 @@ courseRoutes.post(
     verifyToken,
     validateRequest(mutateContentSchema),
     postContentCourse,
+);
+
+courseRoutes.put(
+    "/courses/contents/:id",
+    verifyToken,
+    validateRequest(mutateContentSchema),
+    updateContentCourse,
 );
 
 export default courseRoutes;
