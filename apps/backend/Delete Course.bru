@@ -5,13 +5,13 @@ meta {
 }
 
 delete {
-  url: http://localhost:3000/api/courses/69883917a768cc727bd949af
+  url: {{PROJECT_URL}}/api/courses/69883917a768cc727bd949af
   body: none
   auth: inherit
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjk4MjllODUxNjBlMWRjM2UwM2MzNWYxIn0sImlhdCI6MTc3MDUxNzk3MywiZXhwIjoxNzcwNjA0MzczfQ.bBZJxMiwUBqv3iJ2lYEW87IcXELVms8hWxJDGB-6TfA
+  Authorization: JWT {{JWT_TOKEN}}
 }
 
 settings {

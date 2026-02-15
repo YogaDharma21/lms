@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/api/courses
+  url: {{PROJECT_URL}}/api/courses
   body: none
   auth: inherit
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjk4OTQ4NmZkOTBiNjViMThlNWI0ZjAwIn0sImlhdCI6MTc3MDY3OTc0OCwiZXhwIjoxNzcwNzY2MTQ4fQ.Yzkwo0DASX6DH2E3RJ3Bqk9GwjZHUcRv7PU8gV_Ngcw
+  Authorization: JWT {{JWT_TOKEN}}
 }
 
 settings {

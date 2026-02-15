@@ -1,0 +1,36 @@
+meta {
+  name: Create Content Course
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{PROJECT_URL}}/api/courses/contents
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT {{JWT_TOKEN}}
+}
+
+body:json {
+  {
+    "title": "Materi 2",
+    "type": "video",
+    "courseId":"6991187a5359a298d9b66c03",
+    "video":"GM5M4uUZPno"
+  }
+}
+
+body:multipart-form {
+  title: Materi 1
+  type: text
+  courseId: 6991187a5359a298d9b66c03
+  text: apalah
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

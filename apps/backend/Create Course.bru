@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/api/courses
+  url: {{PROJECT_URL}}/api/courses
   body: multipartForm
   auth: inherit
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjk4ZmRhYThjMzI3MzhiY2YyNGYwZWY5In0sImlhdCI6MTc3MTAzNTMzOCwiZXhwIjoxNzcxMTIxNzM4fQ.mcbBdzhRu6WIth0AtrD-WblOGyK1vkHIS7AcNaKHIOs
+  Authorization: JWT {{JWT_TOKEN}}
 }
 
 body:multipart-form {

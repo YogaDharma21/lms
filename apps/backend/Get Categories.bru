@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:3000/api/categories
+  url: {{PROJECT_URL}}/api/categories
   body: none
   auth: inherit
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjk4OTQ4NmZkOTBiNjViMThlNWI0ZjAwIn0sImlhdCI6MTc3MDc3NTA2NywiZXhwIjoxNzcwODYxNDY3fQ.NKvKRlHn0GS-KQNMq7J3rchMqGC829K9R9ab0Ejp81c
+  Authorization: JWT {{JWT_TOKEN}}
 }
 
 settings {
