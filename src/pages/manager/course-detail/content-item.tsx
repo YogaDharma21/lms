@@ -7,11 +7,11 @@ export default function ContentItem({
     title,
     courseId,
 }: {
-    id: number;
+    id: string;
     index: number;
     type: string;
     title: string;
-    courseId: number;
+    courseId: string;
 }) {
     return (
         <div className="card flex items-center gap-5">
