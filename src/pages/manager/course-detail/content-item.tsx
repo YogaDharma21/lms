@@ -1,4 +1,6 @@
-import { Link } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { Link, useRevalidator } from "react-router";
+import { deleteDetailContent } from "../../../services/courseService";
 
 export default function ContentItem({
     id,
@@ -13,6 +15,19 @@ export default function ContentItem({
     title: string;
     courseId: string;
 }) {
+    const revalidator = useRevalidator();
+    const { isPending, mutateAsync } = useMutation({
+        mutationFn: () => deleteDetailContent(id),
+    });
+
+    const handleDelete = async () => {
+        try {
+            await mutateAsync();
+            revalidator.revalidate();
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <div className="card flex items-center gap-5">
             <div className="relative flex shrink-0 w-[140px] h-[110px] ">
@@ -36,11 +51,11 @@ export default function ContentItem({
                 <div className="flex items-center gap-5">
                     <div className="flex items-center gap-[6px] mt-[6px]">
                         <img
-                            src="/assets/images/icons/note-favorite-purple.svg"
+                            src={`/assets/images/icons/${type === "text" ? "note-favorite-purple.svg" : "video-play-purple.svg"}`}
                             className="w-5 h-5"
                             alt="icon"
                         />
-                        <p className="text-[#838C9D]">{type}</p>
+                        <p className="text-[#838C9D]">{type} Content</p>
                     </div>
                 </div>
             </div>
@@ -53,9 +68,11 @@ export default function ContentItem({
                 </Link>
                 <button
                     type="button"
-                    className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap"
+                    className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleDelete}
+                    disabled={isPending}
                 >
-                    Delete
+                    {isPending ? "Deleting..." : "Delete"}
                 </button>
             </div>
         </div>

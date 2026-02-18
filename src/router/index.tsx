@@ -18,6 +18,7 @@ import {
     getCategories,
     getCourse,
     getCourseDetail,
+    getDetailContent,
 } from "../services/courseService";
 
 interface Session {
@@ -104,6 +105,16 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/courses/:id/create",
+                element: <ManageContentCreatePage />,
+            },
+            {
+                path: "/manager/courses/:id/edit/:contentId",
+                loader: async ({ params }) => {
+                    const content = await getDetailContent(
+                        params.contentId as string,
+                    );
+                    return content.data;
+                },
                 element: <ManageContentCreatePage />,
             },
             {

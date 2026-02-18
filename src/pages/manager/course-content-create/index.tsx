@@ -5,10 +5,14 @@ import { mutateContentSchema } from "../../../utils/zodSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createContent } from "../../../services/courseService";
-import { useNavigate, useParams } from "react-router";
+import { createContent, updateContent } from "../../../services/courseService";
+import { useLoaderData, useNavigate, useParams } from "react-router";
 
 export default function ManageContentCreatePage() {
+    const content = useLoaderData();
+    const { id, contentId } = useParams();
+    const navigate = useNavigate();
+
     const {
         register,
         control,
@@ -17,26 +21,39 @@ export default function ManageContentCreatePage() {
         formState: { errors },
     } = useForm({
         resolver: zodResolver(mutateContentSchema),
+        defaultValues: {
+            title: content?.title,
+            type: content?.type,
+            youtubeId: content?.youtubeId,
+            text: content?.text,
+        },
     });
 
     const type = watch("type");
 
-    const { isPending, mutateAsync } = useMutation({
+    const mutateCreate = useMutation({
         mutationFn: (data: any) => createContent(data),
     });
 
-    const { id } = useParams();
-
-    const navigate = useNavigate();
+    const mutateUpdate = useMutation({
+        mutationFn: (data: any) => updateContent(data, contentId as string),
+    });
 
     const onSubmit = async (values: any) => {
         try {
-            await mutateAsync({
-                ...values,
-                courseId: id,
-            });
+            if (content === undefined) {
+                await mutateCreate.mutateAsync({
+                    ...values,
+                    courseId: id,
+                });
+            } else {
+                await mutateUpdate.mutateAsync({
+                    ...values,
+                    courseId: id,
+                });
+            }
 
-            navigate(`/manager/courses/detail/${id}`);
+            navigate(`/manager/courses/${id}`);
         } catch (error) {
             console.log(error);
         }
@@ -55,7 +72,7 @@ export default function ManageContentCreatePage() {
                     Course
                 </span>
                 <span className="last-of-type:after:content-[''] last-of-type:font-semibold">
-                    Add Content
+                    {content === undefined ? "Add Content" : "Edit Content"}
                 </span>
             </div>
             <header className="flex items-center justify-between gap-[30px]">
@@ -69,7 +86,9 @@ export default function ManageContentCreatePage() {
                     </div>
                     <div>
                         <h1 className="font-extrabold text-[28px] leading-[42px]">
-                            Add Content
+                            {content === undefined
+                                ? "Add Content"
+                                : "Edit Content"}
                         </h1>
                         <p className="text-[#838C9D] mt-[1]">
                             Give a best content for the course
@@ -195,10 +214,20 @@ export default function ManageContentCreatePage() {
                     </button>
                     <button
                         type="submit"
-                        disabled={isPending}
+                        disabled={
+                            content === undefined
+                                ? mutateCreate.isPending
+                                : mutateUpdate.isPending
+                        }
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap disabled:opacity-50"
                     >
-                        {isPending ? "Adding Content..." : "Add Content Now"}
+                        {content === undefined
+                            ? mutateCreate.isPending
+                                ? "Adding Content..."
+                                : "Add Content Now"
+                            : mutateUpdate.isPending
+                              ? "Updating Content..."
+                              : "Update Content Now"}
                     </button>
                 </div>
             </form>
