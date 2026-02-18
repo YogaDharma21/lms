@@ -24,3 +24,39 @@ export const createCourseSchema = z.object({
 export const updateCourseSchema = createCourseSchema.partial({
     thumbnail: true,
 });
+
+const hasActualText = (value: string | undefined): boolean => {
+    if (!value) return false;
+    const strippedText = value.replace(/<[^>]*>/g, "").trim();
+    return strippedText.length > 0;
+};
+
+export const mutateContentSchema = z
+    .object({
+        title: z.string().min(5),
+        type: z.string().min(3, { message: "Type is Required" }),
+        youtubeId: z.string().optional(),
+        text: z.string().optional(),
+    })
+    .superRefine((val, ctx) => {
+        const parseVideoId = z.string().min(4).safeParse(val.youtubeId);
+        if (val.type === "video") {
+            if (!parseVideoId.success) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Youtube ID is required",
+                    path: ["youtubeId"],
+                });
+            }
+        }
+
+        if (val.type === "text") {
+            if (!hasActualText(val.text)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Content Text is required",
+                    path: ["text"],
+                });
+            }
+        }
+    });
