@@ -10,6 +10,7 @@ import {
     postContentCourse,
     updateContentCourse,
     deleteContentCourse,
+    getDetailContent,
 } from "../controllers/courseController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { fileFilter, fileStorageCourse } from "../utils/multer.js";
@@ -58,5 +59,5 @@ courseRoutes.put(
 );
 
 courseRoutes.delete("/courses/contents/:id", verifyToken, deleteContentCourse);
-
+courseRoutes.get("/courses/contents/:id", verifyToken, getDetailContent);
 export default courseRoutes;
