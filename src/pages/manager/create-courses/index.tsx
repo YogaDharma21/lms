@@ -1,6 +1,90 @@
-import { Link } from "react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router";
+import {
+    createCourseSchema,
+    updateCourseSchema,
+} from "../../../utils/zodSchema";
+import { useRef, useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createCourse, updateCourse } from "../../../services/courseService";
 
 export default function ManageCreateCoursePage() {
+    const data = useLoaderData();
+    const { id } = useParams();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        watch,
+    } = useForm({
+        resolver: zodResolver(
+            data.course === null ? createCourseSchema : updateCourseSchema,
+        ),
+        defaultValues: {
+            name: data?.course?.name,
+            tagline: data?.course?.tagline,
+            categoryId: data?.course?.category?._id,
+            description: data?.course?.description,
+        },
+    });
+
+    const navigate = useNavigate();
+
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const inputFileRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (data?.course?.thumbnail_url) {
+            setPreviewUrl(data.course.thumbnail_url);
+        }
+    }, [data]);
+
+    const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFile(file);
+            setValue("thumbnail", file, { shouldValidate: true });
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const thumbnail = watch("thumbnail");
+
+    const mutateCreate = useMutation({
+        mutationFn: (data: FormData) => createCourse(data),
+    });
+
+    const mutateUpdate = useMutation({
+        mutationFn: (data: FormData) => updateCourse(data, id as string),
+    });
+
+    const onSubmit = async (values: any) => {
+        console.log(values);
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            if (file) {
+                formData.append("thumbnail", file);
+            }
+            formData.append("tagline", values.tagline);
+            formData.append("categoryId", values.categoryId);
+            formData.append("description", values.description);
+
+            if (data.course === null) {
+                await mutateCreate.mutateAsync(formData);
+            } else {
+                await mutateUpdate.mutateAsync(formData);
+            }
+
+            navigate("/manager/courses");
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -22,6 +106,7 @@ export default function ManageCreateCoursePage() {
                 </div>
             </header>
             <form
+                onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
                 <div className="flex flex-col gap-[10px]">
@@ -37,12 +122,14 @@ export default function ManageCreateCoursePage() {
                         <input
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="title"
-                            name="title"
                             placeholder="Write better name for your course"
-                            required
                             type="text"
+                            {...register("name")}
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.name?.message}
+                    </span>
                 </div>
                 <div className="relative flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="thumbnail">
@@ -53,9 +140,9 @@ export default function ManageCreateCoursePage() {
                         id="thumbnail-preview-container"
                     >
                         <button
-                            className="absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0"
+                            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0 ${previewUrl ? "hidden" : ""}`}
                             id="trigger-input"
-                            onclick="document.getElementById('thumbnail').click()"
+                            onClick={() => inputFileRef?.current?.click()}
                             type="button"
                         >
                             <img
@@ -69,14 +156,22 @@ export default function ManageCreateCoursePage() {
                         </button>
                         <img
                             alt="thumbnail"
-                            className="w-full h-full object-cover hidden"
+                            className={`w-full h-full object-cover ${previewUrl ? "block" : "hidden"}`}
                             id="thumbnail-preview"
-                            src=""
+                            src={previewUrl || ""}
                         />
                         <button
-                            className="absolute right-[10px] bottom-[10px] w-12 h-12 rounded-full z-10 hidden"
+                            className={`absolute right-[10px] bottom-[10px] w-12 h-12 rounded-full z-10 ${previewUrl ? "block" : "hidden"}`}
                             id="delete-preview"
                             type="button"
+                            onClick={() => {
+                                setFile(null);
+                                setPreviewUrl(null);
+                                setValue("thumbnail", null as any);
+                                if (inputFileRef.current) {
+                                    inputFileRef.current.value = "";
+                                }
+                            }}
                         >
                             <img
                                 alt="delete"
@@ -85,13 +180,16 @@ export default function ManageCreateCoursePage() {
                         </button>
                     </div>
                     <input
+                        ref={inputFileRef}
                         accept="image/*"
-                        className="absolute bottom-0 left-1/4 -z-10"
+                        className="hidden"
                         id="thumbnail"
-                        name="thumbnail"
-                        required
                         type="file"
+                        onChange={handleThumbnailChange}
                     />
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.thumbnail?.message as string}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="tagline">
@@ -106,11 +204,14 @@ export default function ManageCreateCoursePage() {
                         <input
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="tagline"
-                            name="tagline"
                             placeholder="Write tagline for better copy"
                             type="text"
+                            {...register("tagline")}
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.tagline?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="category">
@@ -125,14 +226,21 @@ export default function ManageCreateCoursePage() {
                         <select
                             className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="category"
-                            name="category"
+                            {...register("categoryId")}
                         >
                             <option hidden value="">
                                 Choose one category
                             </option>
-                            <option value="">test</option>
-                            <option value="">test</option>
-                            <option value="">test</option>
+                            {data?.categories?.data.map(
+                                (item: { _id: number; name: string }) => (
+                                    <option
+                                        key={item._id}
+                                        value={String(item._id)}
+                                    >
+                                        {item.name}
+                                    </option>
+                                ),
+                            )}
                         </select>
                         <img
                             alt="icon"
@@ -140,12 +248,15 @@ export default function ManageCreateCoursePage() {
                             src="/assets/images/icons/arrow-down.svg"
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.categoryId?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="desc">
                         Description
                     </label>
-                    <div className="flex w-full rounded-[20px] border border-[#CFDBEF] gap-3 p-5  transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF] ring-2 ring-[#FF435A]">
+                    <div className="flex w-full rounded-[20px] border border-[#CFDBEF] gap-3 p-5  transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
                         <img
                             alt="icon"
                             className="w-6 h-6"
@@ -154,25 +265,30 @@ export default function ManageCreateCoursePage() {
                         <textarea
                             className="appearance-none outline-none w-full font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             id="desc"
-                            name="desc"
                             placeholder="Explain what this course about"
-                            rows="5"
+                            rows={5}
+                            {...register("description")}
                         />
                     </div>
                     <span className="error-message text-[#FF435A]">
-                        The description is required
+                        {errors?.description?.message}
                     </span>
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
                         className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        type="submit"
+                        type="button"
                     >
                         Save as Draft
                     </button>
                     <button
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                         type="submit"
+                        disabled={
+                            data?.course === null
+                                ? mutateCreate.isPending
+                                : mutateUpdate.isPending
+                        }
                     >
                         Create Now
                     </button>

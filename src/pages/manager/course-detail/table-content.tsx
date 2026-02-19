@@ -1,7 +1,13 @@
 import { Link } from "react-router";
 import ContentItem from "./content-item";
 
-export default function TableContent() {
+export default function TableContent({
+    details,
+    courseId,
+}: {
+    details: any[];
+    courseId: string;
+}) {
     return (
         <>
             <section
@@ -13,14 +19,23 @@ export default function TableContent() {
                         Course Content
                     </h2>
                     <Link
-                        to="/manager/courses/1/create"
+                        to={`/manager/courses/${courseId}/create`}
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
                         Add Content
                     </Link>
                 </div>
 
-                <ContentItem id={1} index={1} type="video" title="Install VSCode di Windows" courseId={2} />
+                {details.map((item: any, i: number) => (
+                    <ContentItem
+                        key={item._id}
+                        id={item._id}
+                        index={i + 1}
+                        type={item.type}
+                        title={item.title}
+                        courseId={courseId}
+                    />
+                ))}
 
                 <div id="Pagination" className="flex items-center gap-3">
                     <button

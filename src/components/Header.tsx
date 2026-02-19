@@ -1,6 +1,13 @@
 import { Link } from "react-router";
+import { removeSecureItem } from "../utils/secureStorage";
+import { STORAGE_KEY } from "../utils/const";
 
 export default function Header() {
+    const handleLogout = () => {
+        removeSecureItem(STORAGE_KEY);
+        window.location.replace("/manager/sign-in");
+    };
+
     return (
         <div
             className="flex items-center justify-between gap-[30px]"
@@ -53,7 +60,9 @@ export default function Header() {
                             <Link to="#">Settings</Link>
                         </li>
                         <li className="font-semibold">
-                            <Link to="#">Logout</Link>
+                            <button onClick={handleLogout} type="button">
+                                Logout
+                            </button>
                         </li>
                     </ul>
                 </div>

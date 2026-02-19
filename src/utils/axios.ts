@@ -1,41 +1,40 @@
 import axios from "axios";
-// import secureLocalStorage from "react-secure-storage";
-// import { STORAGE_KEY } from "./const";
-
-// interface Session {
-//     token: string;
-// }
-
+import { getSecureItem, removeSecureItem } from "./secureStorage";
+import { STORAGE_KEY } from "./const";
 const baseURL = import.meta.env.VITE_API_URL;
+interface Session {
+    token: string;
+    [key: string]: unknown;
+}
 
 const apiInstance = axios.create({
     baseURL,
     timeout: 3000,
 });
 
-// export const apiInstanceAuth = axios.create({
-//     baseURL,
-//     timeout: 3000,
-// });
+export const apiInstanceAuth = axios.create({
+    baseURL,
+    timeout: 3000,
+});
 
-// apiInstanceAuth.interceptors.request.use((config) => {
-//     const session = secureLocalStorage.getItem(STORAGE_KEY) as Session | null;
+apiInstanceAuth.interceptors.request.use((config) => {
+    const session = getSecureItem<Session>(STORAGE_KEY);
 
-//     if (!session) {
-//         return config;
-//     }
+    if (!session) {
+        return config;
+    }
 
-//     config.headers.Authorization = `JWT ${session.token}`;
+    config.headers.Authorization = `JWT ${session.token}`;
 
-//     return config;
-// });
+    return config;
+});
 
 // apiInstanceAuth.interceptors.response.use(
 //     (response) => response,
 //     (err) => {
 //         if (err?.response?.status === 400) {
 //             window.location.replace("/manager/sign-in");
-//             secureLocalStorage.removeItem(STORAGE_KEY);
+//             removeSecureItem(STORAGE_KEY);
 //         }
 
 //         return Promise.reject("Err");
