@@ -5,3 +5,6 @@ public/uploads/*
 !public/uploads/courses/
 public/uploads/courses/*
 !public/uploads/courses/.gitkeep
+
+env.bru
+!env.bru.example
