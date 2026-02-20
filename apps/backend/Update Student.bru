@@ -1,0 +1,27 @@
+meta {
+  name: Update Student
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{PROJECT_URL}}/api/students/6997f23fe73d85bc0ac260f8
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT {{JWT_TOKEN}}
+}
+
+body:multipart-form {
+  name: student yang diupadte
+  email: updatestudent2@gmail.com
+  password: 123456789
+  avatar: @file(C:\Users\YogaDharma\Pictures\Screenshots\Screenshot 2026-02-19 120733.png)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
