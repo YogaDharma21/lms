@@ -1,0 +1,27 @@
+meta {
+  name: Create Student
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{PROJECT_URL}}/api/students
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT {{JWT_TOKEN}}
+}
+
+body:multipart-form {
+  name: student 2
+  email: student2@gmail.com
+  password: 123456789
+  avatar: @file(C:\Users\YogaDharma\Pictures\Screenshots\Screenshot 2026-02-19 120733.png)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

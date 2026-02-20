@@ -13,15 +13,15 @@ import {
     getDetailContent,
 } from "../controllers/courseController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
-import { fileFilter, fileStorageCourse } from "../utils/multer.js";
+import { fileFilter, fileStorage } from "../utils/multer.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 import { mutateContentSchema } from "../utils/schema.js";
 
 const courseRoutes = express.Router();
 
 const upload = multer({
-    storage: fileStorageCourse,
-    fileFilter: fileFilter,
+    storage: fileStorage(),
+    fileFilter,
 });
 
 courseRoutes.get("/courses", verifyToken, getCourses);
