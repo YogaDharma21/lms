@@ -20,6 +20,7 @@ import {
     getCourseDetail,
     getDetailContent,
 } from "../services/courseService";
+import { getStudents } from "../services/studentService";
 
 interface Session {
     role: string;
@@ -131,6 +132,10 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/students",
+                loader: async () => {
+                    const students = await getStudents();
+                    return students.data;
+                },
                 element: <ManageStudentsPage />,
             },
             {

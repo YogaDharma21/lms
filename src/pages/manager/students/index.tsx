@@ -1,7 +1,9 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import StudentItem from "./student-item";
 
 export default function ManageStudentsPage() {
+    const students = useLoaderData();
+    console.log("students", students);
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -32,18 +34,15 @@ export default function ManageStudentsPage() {
                 id="CourseList"
                 className="flex flex-col w-full rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
-                <StudentItem
-                    imageUrl="/assets/images/photos/photo-3.png"
-                    name="Angga Risky Setiawan"
-                    totalCourse={183}
-                    id={1}
-                />
-                <StudentItem
-                    imageUrl="/assets/images/photos/photo-2.png"
-                    name="John Doe"
-                    totalCourse={21}
-                    id={2}
-                />
+                {students?.map((item: any, i: number) => (
+                    <StudentItem
+                        key={i}
+                        imageUrl={item.photo_url}
+                        name={item.name}
+                        totalCourse={item.totalCourse}
+                        id={item._id}
+                    />
+                ))}
                 <div id="Pagination" className="flex items-center gap-3">
                     <button
                         type="button"

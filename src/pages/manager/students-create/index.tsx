@@ -1,6 +1,49 @@
-import { Link } from "react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
+import { createStudentSchema } from "../../../utils/zodSchema";
+import { useState, useRef } from "react";
 
 export default function ManageStudentCreatePage() {
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const inputFileRef = useRef<HTMLInputElement>(null);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(createStudentSchema),
+    });
+
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFile(file);
+            setValue("photo", file, { shouldValidate: true });
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const navigate = useNavigate();
+
+    const onSubmit = (values: any) => {
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("email", values.email);
+            formData.append("password", values.password);
+            if (file) {
+                formData.append("thumbnail", file);
+            }
+            navigate("/manager/students");
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -22,7 +65,7 @@ export default function ManageStudentCreatePage() {
                 </div>
             </header>
             <form
-                action="manage-student.html"
+                onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
                 <div className="relative flex flex-col gap-[10px]">
@@ -37,10 +80,8 @@ export default function ManageStudentCreatePage() {
                             <button
                                 type="button"
                                 id="trigger-input"
-                                className="absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0"
-                                onClick={() =>
-                                    document.getElementById("thumbnail").click()
-                                }
+                                className={`absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0 ${previewUrl ? "hidden" : ""}`}
+                                onClick={() => inputFileRef?.current?.click()}
                             >
                                 <img
                                     src="/assets/images/icons/gallery-add-black.svg"
@@ -50,31 +91,45 @@ export default function ManageStudentCreatePage() {
                             </button>
                             <img
                                 id="thumbnail-preview"
-                                src=""
-                                className="w-full h-full object-cover hidden"
+                                src={previewUrl || ""}
+                                className={`w-full h-full object-cover ${previewUrl ? "block" : "hidden"}`}
                                 alt="thumbnail"
                             />
+                            <button
+                                type="button"
+                                id="delete-preview"
+                                className={`absolute right-1 bottom-1 w-8 h-8 rounded-full z-10 ${previewUrl ? "block" : "hidden"}`}
+                                onClick={() => {
+                                    setFile(null);
+                                    setPreviewUrl(null);
+                                    setValue("photo", null as any, {
+                                        shouldValidate: true,
+                                    });
+                                    if (inputFileRef.current) {
+                                        inputFileRef.current.value = "";
+                                    }
+                                }}
+                            >
+                                <img
+                                    src="/assets/images/icons/delete.svg"
+                                    alt="delete"
+                                />
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            id="delete-preview"
-                            className="w-12 h-12 rounded-full z-10 hidden"
-                        >
-                            <img
-                                src="/assets/images/icons/delete.svg"
-                                alt="delete"
-                            />
-                        </button>
                     </div>
                     <input
+                        {...register("photo")}
                         type="file"
-                        name="thumbnail"
                         id="thumbnail"
+                        ref={inputFileRef}
                         accept="image/*"
-                        className="absolute bottom-0 left-1/4 -z-10"
-                        required
+                        className="hidden"
+                        onChange={handlePhotoChange}
                     />
                 </div>
+                <span className="error-message text-[#FF435A]">
+                    {errors?.photo?.message as string}
+                </span>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="name" className="font-semibold">
                         Full Name
@@ -86,14 +141,16 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("name")}
                             type="text"
-                            name="name"
                             id="name"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             placeholder="Write your name"
-                            required=""
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.name?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="email" className="font-semibold">
@@ -106,14 +163,16 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("email")}
                             type="email"
-                            name="email"
                             id="email"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             placeholder="Write your email address"
-                            required=""
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.email?.message}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="password" className="font-semibold">
@@ -126,18 +185,20 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("password")}
                             type="password"
-                            name="password"
                             id="password"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             placeholder="Type password"
-                            required
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.password?.message}
+                    </span>
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
-                        type="submit"
+                        type="button"
                         className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
                     >
                         Save as Draft

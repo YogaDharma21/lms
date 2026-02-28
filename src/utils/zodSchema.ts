@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { email } from "zod";
 
 export const signUpSchema = z.object({
     name: z.string().min(5),
@@ -60,3 +60,14 @@ export const mutateContentSchema = z
             }
         }
     });
+
+export const createStudentSchema = z.object({
+    name: z.string().min(5),
+    email: z.string().email(),
+    password: z.string().min(5),
+    photo: z
+        .instanceof(File, { message: "Photo is required" })
+        .refine((file) => file !== undefined && file !== null, {
+            message: "Photo is required",
+        }),
+});
