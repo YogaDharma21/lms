@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { createStudentSchema } from "../../../utils/zodSchema";
 import { useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createStudent } from "../../../services/studentService";
 
 export default function ManageStudentCreatePage() {
     const [file, setFile] = useState<File | null>(null);
@@ -30,15 +32,22 @@ export default function ManageStudentCreatePage() {
 
     const navigate = useNavigate();
 
-    const onSubmit = (values: any) => {
+    const { isPending, mutateAsync } = useMutation({
+        mutationFn: (data: any) => createStudent(data),
+    });
+
+    const onSubmit = async (values: any) => {
         try {
             const formData = new FormData();
             formData.append("name", values.name);
             formData.append("email", values.email);
             formData.append("password", values.password);
             if (file) {
-                formData.append("thumbnail", file);
+                formData.append("avatar", file);
             }
+
+            await mutateAsync(formData);
+
             navigate("/manager/students");
         } catch (error) {
             console.log(error);
@@ -126,10 +135,10 @@ export default function ManageStudentCreatePage() {
                         className="hidden"
                         onChange={handlePhotoChange}
                     />
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.photo?.message as string}
+                    </span>
                 </div>
-                <span className="error-message text-[#FF435A]">
-                    {errors?.photo?.message as string}
-                </span>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="name" className="font-semibold">
                         Full Name
@@ -205,6 +214,7 @@ export default function ManageStudentCreatePage() {
                     </button>
                     <button
                         type="submit"
+                        disabled={isPending}
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
                         Add Now
