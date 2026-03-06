@@ -1,7 +1,7 @@
 import express from "express";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import {
-    deleteStudent,
+    deleteStudent, getStudentById,
     getStudents,
     postStudent,
     updateStudent,
@@ -16,6 +16,8 @@ const upload = multer({
 });
 
 studentRoutes.get("/students", verifyToken, getStudents);
+
+studentRoutes.get("/students/:id",verifyToken, getStudentById);
 
 studentRoutes.post(
     "/students",
