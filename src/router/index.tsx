@@ -20,7 +20,7 @@ import {
     getCourseDetail,
     getDetailContent,
 } from "../services/courseService";
-import { getStudents } from "../services/studentService";
+import { getDetailStudent, getStudents } from "../services/studentService";
 
 interface Session {
     role: string;
@@ -140,6 +140,14 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/students/create",
+                element: <ManageStudentCreatePage />,
+            },
+            {
+                path: "/manager/students/edit/:id",
+                loader: async ({ params }) => {
+                    const student = await getDetailStudent(params.id as string);
+                    return student?.data;
+                },
                 element: <ManageStudentCreatePage />,
             },
         ],

@@ -1,15 +1,27 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
-import { createStudentSchema } from "../../../utils/zodSchema";
-import { useState, useRef } from "react";
+import { Link, useLoaderData, useNavigate } from "react-router";
+import {
+    createStudentSchema,
+    updateStudentSchema,
+} from "../../../utils/zodSchema";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createStudent } from "../../../services/studentService";
+import { createStudent, updateStudent } from "../../../services/studentService";
 
 export default function ManageStudentCreatePage() {
+    const student = useLoaderData() as any;
+    const isEditMode = student !== undefined && student !== null;
+
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const inputFileRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (student?.photo_url) {
+            setPreviewUrl(student.photo_url);
+        }
+    }, [student]);
 
     const {
         register,
@@ -17,14 +29,20 @@ export default function ManageStudentCreatePage() {
         formState: { errors },
         setValue,
     } = useForm({
-        resolver: zodResolver(createStudentSchema),
+        resolver: zodResolver(
+            isEditMode ? updateStudentSchema : createStudentSchema,
+        ),
+        defaultValues: {
+            name: student?.name,
+            email: student?.email,
+        },
     });
 
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setFile(file);
-            setValue("photo", file, { shouldValidate: true });
+            setValue("photo" as any, file, { shouldValidate: true });
             const url = URL.createObjectURL(file);
             setPreviewUrl(url);
         }
@@ -32,8 +50,12 @@ export default function ManageStudentCreatePage() {
 
     const navigate = useNavigate();
 
-    const { isPending, mutateAsync } = useMutation({
+    const mutateCreate = useMutation({
         mutationFn: (data: any) => createStudent(data),
+    });
+
+    const mutateUpdate = useMutation({
+        mutationFn: (data: any) => updateStudent(data, student?._id),
     });
 
     const onSubmit = async (values: any) => {
@@ -41,12 +63,18 @@ export default function ManageStudentCreatePage() {
             const formData = new FormData();
             formData.append("name", values.name);
             formData.append("email", values.email);
-            formData.append("password", values.password);
+            if (values.password) {
+                formData.append("password", values.password);
+            }
             if (file) {
                 formData.append("avatar", file);
             }
 
-            await mutateAsync(formData);
+            if (isEditMode) {
+                await mutateUpdate.mutateAsync(formData);
+            } else {
+                await mutateCreate.mutateAsync(formData);
+            }
 
             navigate("/manager/students");
         } catch (error) {
@@ -58,10 +86,10 @@ export default function ManageStudentCreatePage() {
             <header className="flex items-center justify-between gap-[30px]">
                 <div>
                     <h1 className="font-extrabold text-[28px] leading-[42px]">
-                        Add Student
+                        {isEditMode ? "Edit Student" : "Add Student"}
                     </h1>
                     <p className="text-[#838C9D] mt-[1]">
-                        Create new future for company
+                        {isEditMode ? "Edit existing student data" : "Create new future for company"}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -111,9 +139,7 @@ export default function ManageStudentCreatePage() {
                                 onClick={() => {
                                     setFile(null);
                                     setPreviewUrl(null);
-                                    setValue("photo", null as any, {
-                                        shouldValidate: true,
-                                    });
+                                    setValue("photo" as any, null as any);
                                     if (inputFileRef.current) {
                                         inputFileRef.current.value = "";
                                     }
@@ -127,7 +153,7 @@ export default function ManageStudentCreatePage() {
                         </div>
                     </div>
                     <input
-                        {...register("photo")}
+                        {...register("photo" as any)}
                         type="file"
                         id="thumbnail"
                         ref={inputFileRef}
@@ -136,7 +162,7 @@ export default function ManageStudentCreatePage() {
                         onChange={handlePhotoChange}
                     />
                     <span className="error-message text-[#FF435A]">
-                        {errors?.photo?.message as string}
+                        {((errors as any)?.photo?.message as string) || ""}
                     </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
@@ -158,7 +184,7 @@ export default function ManageStudentCreatePage() {
                         />
                     </div>
                     <span className="error-message text-[#FF435A]">
-                        {errors?.name?.message}
+                        {errors?.name?.message as string}
                     </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
@@ -180,12 +206,12 @@ export default function ManageStudentCreatePage() {
                         />
                     </div>
                     <span className="error-message text-[#FF435A]">
-                        {errors?.email?.message}
+                        {errors?.email?.message as string}
                     </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="password" className="font-semibold">
-                        Password
+                        Password {!isEditMode && "*"}
                     </label>
                     <div className="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
                         <img
@@ -194,15 +220,15 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
-                            {...register("password")}
+                            {...register("password" as any)}
                             type="password"
                             id="password"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-                            placeholder="Type password"
+                            placeholder={isEditMode ? "Leave blank to keep current password" : "Type password"}
                         />
                     </div>
                     <span className="error-message text-[#FF435A]">
-                        {errors?.password?.message}
+                        {((errors as any)?.password?.message as string) || ""}
                     </span>
                 </div>
                 <div className="flex items-center gap-[14px]">
@@ -214,10 +240,14 @@ export default function ManageStudentCreatePage() {
                     </button>
                     <button
                         type="submit"
-                        disabled={isPending}
+                        disabled={
+                            isEditMode
+                                ? mutateUpdate.isPending
+                                : mutateCreate.isPending
+                        }
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
-                        Add Now
+                        {isEditMode ? "Update Now" : "Add Now"}
                     </button>
                 </div>
             </form>

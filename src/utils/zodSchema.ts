@@ -66,8 +66,16 @@ export const createStudentSchema = z.object({
     email: z.string().email(),
     password: z.string().min(5),
     photo: z
-        .instanceof(File, { message: "Photo is required" })
+        .instanceof(File)
+        .optional()
         .refine((file) => file !== undefined && file !== null, {
             message: "Photo is required",
         }),
+});
+
+export const updateStudentSchema = createStudentSchema.omit({
+    photo: true,
+    password: true,
+}).extend({
+    password: z.string().min(5).optional().or(z.literal("")),
 });
