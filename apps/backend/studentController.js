@@ -129,6 +129,19 @@ export const updateStudent = async (req, res) => {
 
         const student = await userModel.findById(id);
 
+        if (req.file && student.photo) {
+            const dirname = path.resolve();
+            const oldFilePath = path.join(
+                dirname,
+                "public/uploads/students",
+                student.photo,
+            );
+
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+            }
+        }
+
         const hashPassword = parse.data?.password
             ? bcrypt.hashSync(parse.data.password, 12)
             : student.password;
