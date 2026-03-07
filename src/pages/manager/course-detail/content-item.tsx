@@ -68,7 +68,7 @@ export default function ContentItem({
                 </Link>
                 <button
                     type="button"
-                    className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     onClick={handleDelete}
                     disabled={isPending}
                 >

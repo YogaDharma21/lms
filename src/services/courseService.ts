@@ -45,3 +45,16 @@ export const updateContent = async (data: FormData, id: string) =>
 
 export const deleteDetailContent = async (id: string) =>
     apiInstanceAuth.delete(`/courses/contents/${id}`).then((res) => res.data);
+
+export const getStudentCourse = async (id: string) =>
+    apiInstanceAuth.get(`/courses/students/${id}`).then((res) => res.data);
+
+export const addStudentCourse = async (data: FormData, id: string) =>
+    apiInstanceAuth
+        .post(`/courses/students/${id}`, data)
+        .then((res) => res.data);
+
+export const deleteStudentCourse = async (data: any, id: string) =>
+    apiInstanceAuth
+        .put(`/courses/students/${id}`, data)
+        .then((res) => res.data);

@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { email } from "zod";
 
 export const signUpSchema = z.object({
     name: z.string().min(5),
@@ -60,3 +60,28 @@ export const mutateContentSchema = z
             }
         }
     });
+
+export const createStudentSchema = z.object({
+    name: z.string().min(5),
+    email: z.string().email(),
+    password: z.string().min(5),
+    photo: z
+        .instanceof(File)
+        .optional()
+        .refine((file) => file !== undefined && file !== null, {
+            message: "Photo is required",
+        }),
+});
+
+export const updateStudentSchema = createStudentSchema
+    .omit({
+        photo: true,
+        password: true,
+    })
+    .extend({
+        password: z.string().min(5).optional().or(z.literal("")),
+    });
+
+export const addStudentCourseSchema = z.object({
+    studentId: z.string().min(5),
+});

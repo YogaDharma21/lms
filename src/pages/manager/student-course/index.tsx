@@ -1,18 +1,19 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useParams } from "react-router";
 import StudentItem from "./student-item";
 
-export default function ManageStudentsPage() {
-    const students = useLoaderData();
-    console.log("students", students);
+export default function StudentCourseList() {
+    const { id } = useParams();
+    const course = useLoaderData();
+    console.log(course);
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
                 <div>
                     <h1 className="font-extrabold text-[28px] leading-[42px]">
-                        Manage Students
+                        Students
                     </h1>
                     <p className="text-[#838C9D] mt-[1]">
-                        Keep your employee or student happy
+                        Keep your students happy
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -23,7 +24,7 @@ export default function ManageStudentsPage() {
                         Import File
                     </Link>
                     <Link
-                        to="/manager/students/create"
+                        to={`/manager/courses/students/${id}/add`}
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
                         Add Student
@@ -34,12 +35,11 @@ export default function ManageStudentsPage() {
                 id="CourseList"
                 className="flex flex-col w-full rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
-                {students?.map((item: any, i: number) => (
+                {course?.students?.map((item: any, i: number) => (
                     <StudentItem
                         key={i}
                         imageUrl={item.photo_url}
                         name={item.name}
-                        totalCourse={item.totalCourse}
                         id={item._id}
                     />
                 ))}

@@ -1,6 +1,18 @@
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
+    const location = useLocation();
+
+    const isActive = (path: string) => {
+        if (path === "/manager") {
+            return location.pathname === "/manager" || location.pathname === "/";
+        }
+        return location.pathname.startsWith(path);
+    };
+
+    const activeClass = "bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]";
+    const inactiveClass = "bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]";
+
     return (
         <aside className="sidebar-container fixed h-[calc(100vh-20px)] w-full max-w-[280px] my-[10px] ml-[10px] bg-[#060A23] overflow-hidden flex flex-1 rounded-[20px]">
             <div className="scroll-container flex w-full overflow-y-scroll hide-scrollbar">
@@ -14,7 +26,7 @@ export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
                         </p>
                         <li>
                             <Link to="/manager">
-                                <div className="flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                                <div className={`flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] ${isActive("/manager") ? activeClass : inactiveClass}`}>
                                     <img
                                         alt="icon"
                                         className="w-6 h-6"
@@ -30,7 +42,7 @@ export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
                             <>
                                 <li>
                                     <Link to="/manager/courses">
-                                        <div className="flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
+                                        <div className={`flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] ${isActive("/manager/courses") ? activeClass : inactiveClass}`}>
                                             <img
                                                 alt="icon"
                                                 className="w-6 h-6"
@@ -43,8 +55,8 @@ export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="#">
-                                        <div className="flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
+                                    <Link to="/manager/categories">
+                                        <div className={`flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] ${isActive("/manager/categories") ? activeClass : inactiveClass}`}>
                                             <img
                                                 alt="icon"
                                                 className="w-6 h-6"
@@ -58,7 +70,7 @@ export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
                                 </li>
                                 <li>
                                     <Link to="/manager/students">
-                                        <div className="flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
+                                        <div className={`flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] ${isActive("/manager/students") ? activeClass : inactiveClass}`}>
                                             <img
                                                 alt="icon"
                                                 className="w-6 h-6"

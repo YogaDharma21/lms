@@ -1,15 +1,95 @@
-import { Link } from "react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Link, useLoaderData, useNavigate } from "react-router";
+import {
+    createStudentSchema,
+    updateStudentSchema,
+} from "../../../utils/zodSchema";
+import { useState, useRef, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createStudent, updateStudent } from "../../../services/studentService";
 
 export default function ManageStudentCreatePage() {
+    const student = useLoaderData() as any;
+    const isEditMode = student !== undefined && student !== null;
+
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const inputFileRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (student?.photo_url) {
+            setPreviewUrl(student.photo_url);
+        }
+    }, [student]);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(
+            isEditMode ? updateStudentSchema : createStudentSchema,
+        ),
+        defaultValues: {
+            name: student?.name,
+            email: student?.email,
+        },
+    });
+
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFile(file);
+            setValue("photo" as any, file, { shouldValidate: true });
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    const navigate = useNavigate();
+
+    const mutateCreate = useMutation({
+        mutationFn: (data: any) => createStudent(data),
+    });
+
+    const mutateUpdate = useMutation({
+        mutationFn: (data: any) => updateStudent(data, student?._id),
+    });
+
+    const onSubmit = async (values: any) => {
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("email", values.email);
+            if (values.password) {
+                formData.append("password", values.password);
+            }
+            if (file) {
+                formData.append("avatar", file);
+            }
+
+            if (isEditMode) {
+                await mutateUpdate.mutateAsync(formData);
+            } else {
+                await mutateCreate.mutateAsync(formData);
+            }
+
+            navigate("/manager/students");
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
                 <div>
                     <h1 className="font-extrabold text-[28px] leading-[42px]">
-                        Add Student
+                        {isEditMode ? "Edit Student" : "Add Student"}
                     </h1>
                     <p className="text-[#838C9D] mt-[1]">
-                        Create new future for company
+                        {isEditMode ? "Edit existing student data" : "Create new future for company"}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -22,7 +102,7 @@ export default function ManageStudentCreatePage() {
                 </div>
             </header>
             <form
-                action="manage-student.html"
+                onSubmit={handleSubmit(onSubmit)}
                 className="flex flex-col w-[550px] rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
                 <div className="relative flex flex-col gap-[10px]">
@@ -37,10 +117,8 @@ export default function ManageStudentCreatePage() {
                             <button
                                 type="button"
                                 id="trigger-input"
-                                className="absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0"
-                                onClick={() =>
-                                    document.getElementById("thumbnail").click()
-                                }
+                                className={`absolute top-0 left-0 w-full h-full flex justify-center items-center gap-3 z-0 ${previewUrl ? "hidden" : ""}`}
+                                onClick={() => inputFileRef?.current?.click()}
                             >
                                 <img
                                     src="/assets/images/icons/gallery-add-black.svg"
@@ -50,30 +128,42 @@ export default function ManageStudentCreatePage() {
                             </button>
                             <img
                                 id="thumbnail-preview"
-                                src=""
-                                className="w-full h-full object-cover hidden"
+                                src={previewUrl || ""}
+                                className={`w-full h-full object-cover ${previewUrl ? "block" : "hidden"}`}
                                 alt="thumbnail"
                             />
+                            <button
+                                type="button"
+                                id="delete-preview"
+                                className={`absolute right-1 bottom-1 w-8 h-8 rounded-full z-10 ${previewUrl ? "block" : "hidden"}`}
+                                onClick={() => {
+                                    setFile(null);
+                                    setPreviewUrl(null);
+                                    setValue("photo" as any, null as any);
+                                    if (inputFileRef.current) {
+                                        inputFileRef.current.value = "";
+                                    }
+                                }}
+                            >
+                                <img
+                                    src="/assets/images/icons/delete.svg"
+                                    alt="delete"
+                                />
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            id="delete-preview"
-                            className="w-12 h-12 rounded-full z-10 hidden"
-                        >
-                            <img
-                                src="/assets/images/icons/delete.svg"
-                                alt="delete"
-                            />
-                        </button>
                     </div>
                     <input
+                        {...register("photo" as any)}
                         type="file"
-                        name="thumbnail"
                         id="thumbnail"
+                        ref={inputFileRef}
                         accept="image/*"
-                        className="absolute bottom-0 left-1/4 -z-10"
-                        required
+                        className="hidden"
+                        onChange={handlePhotoChange}
                     />
+                    <span className="error-message text-[#FF435A]">
+                        {((errors as any)?.photo?.message as string) || ""}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="name" className="font-semibold">
@@ -86,14 +176,16 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("name")}
                             type="text"
-                            name="name"
                             id="name"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             placeholder="Write your name"
-                            required=""
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.name?.message as string}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="email" className="font-semibold">
@@ -106,18 +198,20 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("email")}
                             type="email"
-                            name="email"
                             id="email"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
                             placeholder="Write your email address"
-                            required=""
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {errors?.email?.message as string}
+                    </span>
                 </div>
                 <div className="flex flex-col gap-[10px]">
                     <label htmlFor="password" className="font-semibold">
-                        Password
+                        Password {!isEditMode && "*"}
                     </label>
                     <div className="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
                         <img
@@ -126,27 +220,34 @@ export default function ManageStudentCreatePage() {
                             alt="icon"
                         />
                         <input
+                            {...register("password" as any)}
                             type="password"
-                            name="password"
                             id="password"
                             className="appearance-none outline-none w-full py-3 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-                            placeholder="Type password"
-                            required
+                            placeholder={isEditMode ? "Leave blank to keep current password" : "Type password"}
                         />
                     </div>
+                    <span className="error-message text-[#FF435A]">
+                        {((errors as any)?.password?.message as string) || ""}
+                    </span>
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
-                        type="submit"
+                        type="button"
                         className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
                     >
                         Save as Draft
                     </button>
                     <button
                         type="submit"
+                        disabled={
+                            isEditMode
+                                ? mutateUpdate.isPending
+                                : mutateCreate.isPending
+                        }
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
-                        Add Now
+                        {isEditMode ? "Update Now" : "Add Now"}
                     </button>
                 </div>
             </form>

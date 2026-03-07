@@ -19,7 +19,11 @@ import {
     getCourse,
     getCourseDetail,
     getDetailContent,
+    getStudentCourse,
 } from "../services/courseService";
+import { getDetailStudent, getStudents } from "../services/studentService";
+import StudentCourseList from "../pages/manager/student-course";
+import StudentForm from "../pages/manager/student-course/student-form";
 
 interface Session {
     role: string;
@@ -131,11 +135,40 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/students",
+                loader: async () => {
+                    const students = await getStudents();
+                    return students.data;
+                },
                 element: <ManageStudentsPage />,
             },
             {
                 path: "/manager/students/create",
                 element: <ManageStudentCreatePage />,
+            },
+            {
+                path: "/manager/students/edit/:id",
+                loader: async ({ params }) => {
+                    const student = await getDetailStudent(params.id as string);
+                    return student?.data;
+                },
+                element: <ManageStudentCreatePage />,
+            },
+            {
+                path: "/manager/courses/students/:id",
+                loader: async ({ params }) => {
+                    const course = await getStudentCourse(params.id as string);
+                    return course?.data;
+                },
+                element: <StudentCourseList />,
+            },
+            {
+                path: "/manager/courses/students/:id/add",
+                loader: async ({ params }) => {
+                    const student = await getStudents();
+
+                    return student?.data;
+                },
+                element: <StudentForm />,
             },
         ],
     },
