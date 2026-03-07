@@ -1,3 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
+import { useParams, useRevalidator } from "react-router";
+import { deleteStudentCourse } from "../../../services/courseService";
+
 export default function StudentItem({
     imageUrl,
     name,
@@ -7,6 +11,27 @@ export default function StudentItem({
     name: string;
     id: string;
 }) {
+    const revalidator = useRevalidator();
+    const params = useParams();
+
+    const { isPending, mutateAsync } = useMutation({
+        mutationFn: () =>
+            deleteStudentCourse(
+                {
+                    studentId: id,
+                },
+                params.id as string,
+            ),
+    });
+
+    const handleDelete = async () => {
+        try {
+            await mutateAsync();
+            revalidator.revalidate();
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <>
             <div className="card flex items-center gap-5">
@@ -28,8 +53,10 @@ export default function StudentItem({
                     <button
                         type="button"
                         className="w-fit rounded-full p-[14px_20px] bg-[#FF435A] font-semibold text-white text-nowrap"
+                        disabled={isPending}
+                        onClick={handleDelete}
                     >
-                        Delete
+                        {isPending ? "Deleting..." : "Delete"}
                     </button>
                 </div>
             </div>
