@@ -73,9 +73,15 @@ export const createStudentSchema = z.object({
         }),
 });
 
-export const updateStudentSchema = createStudentSchema.omit({
-    photo: true,
-    password: true,
-}).extend({
-    password: z.string().min(5).optional().or(z.literal("")),
+export const updateStudentSchema = createStudentSchema
+    .omit({
+        photo: true,
+        password: true,
+    })
+    .extend({
+        password: z.string().min(5).optional().or(z.literal("")),
+    });
+
+export const addStudentCourseSchema = z.object({
+    studentId: z.string().min(5),
 });

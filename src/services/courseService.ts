@@ -48,3 +48,8 @@ export const deleteDetailContent = async (id: string) =>
 
 export const getStudentCourse = async (id: string) =>
     apiInstanceAuth.get(`/courses/students/${id}`).then((res) => res.data);
+
+export const addStudentCourse = async (data: FormData, id: string) =>
+    apiInstanceAuth
+        .post(`/courses/students/${id}`, data)
+        .then((res) => res.data);
