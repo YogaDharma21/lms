@@ -13,6 +13,7 @@ import {
     getDetailContent,
     getStudentsByCourseId,
     postStudentToCourse,
+    deleteStudentToCourse,
 } from "../controllers/courseController.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import { fileFilter, fileStorage } from "../utils/multer.js";
@@ -72,6 +73,12 @@ courseRoutes.post(
     verifyToken,
     validateRequest(addStudentCourseSchema),
     postStudentToCourse,
+);
+courseRoutes.put(
+    "/courses/students/:id",
+    verifyToken,
+    validateRequest(addStudentCourseSchema),
+    deleteStudentToCourse,
 );
 
 export default courseRoutes;
