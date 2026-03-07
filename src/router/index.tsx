@@ -24,6 +24,7 @@ import {
 import { getDetailStudent, getStudents } from "../services/studentService";
 import StudentCourseList from "../pages/manager/student-course";
 import StudentForm from "../pages/manager/student-course/student-form";
+import { getOverviews } from "../services/overviewService";
 
 interface Session {
     role: string;
@@ -37,10 +38,28 @@ const router = createBrowserRouter([
     },
     {
         path: "/manager/sign-in",
+        loader: async () => {
+            const session = getSecureItem<Session>(STORAGE_KEY);
+
+            if (session?.role === "manager") {
+                throw redirect("/manager");
+            }
+
+            return session;
+        },
         element: <SignInPage />,
     },
     {
         path: "/manager/sign-up",
+        loader: async () => {
+            const session = getSecureItem<Session>(STORAGE_KEY);
+
+            if (session?.role === "manager") {
+                throw redirect("/manager");
+            }
+
+            return session;
+        },
         element: <SignUpPage />,
     },
     {
@@ -63,6 +82,10 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
+                loader: async () => {
+                    const overviews = await getOverviews();
+                    return overviews?.data;
+                },
                 element: <ManagerHome />,
             },
             {
@@ -163,7 +186,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/manager/courses/students/:id/add",
-                loader: async ({ params }) => {
+                loader: async () => {
                     const student = await getStudents();
 
                     return student?.data;

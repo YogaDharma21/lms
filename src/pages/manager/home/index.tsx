@@ -1,8 +1,9 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import Courses from "./courses";
 import Students from "./students";
 
 export default function ManagerHome() {
+    const overviews = useLoaderData();
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -42,7 +43,7 @@ export default function ManagerHome() {
                         />
                         <div>
                             <p className="font-extrabold text-2xl leading-[36px]">
-                                189,498
+                                {overviews.totalStudents}
                             </p>
                             <p className="text-[#838C9D]">Total Students</p>
                         </div>
@@ -55,7 +56,7 @@ export default function ManagerHome() {
                         />
                         <div>
                             <p className="font-extrabold text-2xl leading-[36px]">
-                                7,221
+                                {overviews.totalCourses}
                             </p>
                             <p className="text-[#838C9D]">Total Courses</p>
                         </div>
@@ -68,7 +69,7 @@ export default function ManagerHome() {
                         />
                         <div>
                             <p className="font-extrabold text-2xl leading-[36px]">
-                                893,891
+                                {overviews.totalVideos}
                             </p>
                             <p className="text-[#838C9D]">Video Content</p>
                         </div>
@@ -81,7 +82,7 @@ export default function ManagerHome() {
                         />
                         <div>
                             <p className="font-extrabold text-2xl leading-[36px]">
-                                12,812
+                                {overviews.totalTexts}
                             </p>
                             <p className="text-[#838C9D]">Text Content</p>
                         </div>

@@ -29,16 +29,23 @@ apiInstanceAuth.interceptors.request.use((config) => {
     return config;
 });
 
-// apiInstanceAuth.interceptors.response.use(
-//     (response) => response,
-//     (err) => {
-//         if (err?.response?.status === 400) {
-//             window.location.replace("/manager/sign-in");
-//             removeSecureItem(STORAGE_KEY);
-//         }
+apiInstanceAuth.interceptors.response.use(
+    (response) => response,
+    (err) => {
+        const status = err?.response?.status;
 
-//         return Promise.reject("Err");
-//     },
-// );
+        if (status === 400 || status === 401) {
+            const message = err?.response?.data?.message;
+            
+            if (message === "Token expired" || message === "Invalid token" || message === "Unauthorization") {
+                removeSecureItem(STORAGE_KEY);
+                window.location.replace("/manager/sign-in");
+            } else if (status === 400) {
+                window.location.replace("/manager/sign-in");
+                removeSecureItem(STORAGE_KEY);
+            }
+        }
+    },
+);
 
 export default apiInstance;
