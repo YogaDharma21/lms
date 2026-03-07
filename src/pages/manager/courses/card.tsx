@@ -65,6 +65,12 @@ export default function CardCourse({
                 </div>
             </div>
             <div className="flex justify-end items-center gap-3">
+                <Link
+                    className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
+                    to={`/manager/courses/students/${id}`}
+                >
+                    Students
+                </Link>
                 <button
                     className="w-fit rounded-full bg-red-500 border text-white p-[14px_20px] font-semibold text-nowrap"
                     type="button"

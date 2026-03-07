@@ -19,8 +19,10 @@ import {
     getCourse,
     getCourseDetail,
     getDetailContent,
+    getStudentCourse,
 } from "../services/courseService";
 import { getDetailStudent, getStudents } from "../services/studentService";
+import StudentCourseList from "../pages/manager/student-course";
 
 interface Session {
     role: string;
@@ -149,6 +151,14 @@ const router = createBrowserRouter([
                     return student?.data;
                 },
                 element: <ManageStudentCreatePage />,
+            },
+            {
+                path: "/manager/courses/students/:id",
+                loader: async ({ params }) => {
+                    const course = await getStudentCourse(params.id as string);
+                    return course?.data;
+                },
+                element: <StudentCourseList />,
             },
         ],
     },
