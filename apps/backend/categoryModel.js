@@ -18,4 +18,6 @@ const categoryModel = mongoose.Schema(
     },
 );
 
+categoryModel.index({ courses: 1 });
+
 export default mongoose.model("Category", categoryModel);

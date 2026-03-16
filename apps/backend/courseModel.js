@@ -9,6 +9,7 @@ const courseModel = mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
+        index: true,
     },
     tagline: { type: String, required: true },
     description: { type: String, required: true },
@@ -16,11 +17,13 @@ const courseModel = mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            index: true,
         },
     ],
     manager: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        index: true,
     },
     details: [
         {
@@ -29,6 +32,8 @@ const courseModel = mongoose.Schema({
         },
     ],
 });
+
+courseModel.index({ category: 1, manager: 1 });
 
 courseModel.post("findOneAndDelete", async (doc) => {
     if (doc) {

@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
-import TransactionModel from "../models/transactionModel.js";
 import jwt from "jsonwebtoken";
 import transactionModel from "../models/transactionModel.js";
 
@@ -40,7 +39,7 @@ export const signUpAction = async (req, res) => {
             role: "manager",
         });
 
-        const transaction = new TransactionModel({
+        const transaction = new transactionModel({
             user: user._id,
             price: price,
         });
@@ -59,7 +58,7 @@ export const signUpAction = async (req, res) => {
                     email: user.email,
                 },
                 callbacks: {
-                    finish: "http://localhost:5173/success-checkout",
+                    finish: `${process.env.APP_URL}/success-checkout`,
                 },
             }),
             headers: {
