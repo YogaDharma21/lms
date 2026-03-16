@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
 export default function connectDB() {
-    const DATABASE_URL = process.env.DATABASE_URL ?? "";
+    const DATABASE_URL = process.env.DATABASE_URL;
+
+    if (!DATABASE_URL) {
+        console.error("DATABASE_URL is not configured. Please set DATABASE_URL environment variable.");
+        process.exit(1);
+    }
 
     try {
         mongoose.connect(DATABASE_URL);
