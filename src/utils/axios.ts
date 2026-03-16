@@ -56,7 +56,8 @@ apiInstanceAuth.interceptors.response.use(
                     window.location.replace(redirectUrl);
                     removeSecureItem(STORAGE_KEY);
                 } else {
-                    window.location.replace("/sign-in");
+                    const redirectUrl = getRedirectUrl(userRole);
+                    window.location.replace(redirectUrl);
                 }
             }
         }
