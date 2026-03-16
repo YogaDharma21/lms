@@ -1,0 +1,28 @@
+meta {
+  name: Create Course
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{PROJECT_URL}}/api/courses
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT {{JWT_TOKEN}}
+}
+
+body:multipart-form {
+  name: Hi Hi
+  categoryId: 697ebce241d7ea81f7f26b8e
+  tagline: Halo Halo
+  description: ini deskripsi aja sih
+  thumbnail: @file(C:\Users\YogaDharma\Pictures\Screenshots\Screenshot 2026-02-19 120733.png)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

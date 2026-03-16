@@ -1,1 +1,13 @@
 node_modules
+.env
+!.env.example
+public/uploads/*
+!public/uploads/courses/
+public/uploads/courses/*
+!public/uploads/courses/.gitkeep
+!public/uploads/students/
+public/uploads/students/*
+!public/uploads/students/.gitkeep
+
+env.bru
+!env.bru.example
