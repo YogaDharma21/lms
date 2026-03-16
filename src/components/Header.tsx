@@ -1,13 +1,15 @@
 import { Link, useRouteLoaderData } from "react-router";
 import { removeSecureItem } from "../utils/secureStorage";
-import { MANAGER_SESSION, STORAGE_KEY } from "../utils/const";
+import { MANAGER_SESSION, STORAGE_KEY, STUDENT_SESSION } from "../utils/const";
 
-export default function Header() {
-    const session = useRouteLoaderData(MANAGER_SESSION);
+export default function Header({ type = "manager" }: { type: string }) {
+    const session = useRouteLoaderData(
+        type === "manager" ? MANAGER_SESSION : STUDENT_SESSION,
+    );
 
     const handleLogout = () => {
         removeSecureItem(STORAGE_KEY);
-        window.location.replace("/manager/sign-in");
+        window.location.replace(`/${type}/sign-in`);
     };
 
     return (
@@ -48,7 +50,7 @@ export default function Header() {
                     />
                 </button>
                 <div
-                    className="absolute top-full hidden group-hover:block"
+                    className="absolute top-full hidden group-hover:block z-30"
                     id="ProfileDropdown"
                 >
                     <ul className="flex flex-col w-[200px] rounded-[20px] border border-[#CFDBEF] p-5 gap-4 bg-white mt-4">
