@@ -105,13 +105,20 @@ export const signInAction = async (req, res) => {
             });
         }
 
+        const secretKey = process.env.SECRET_KEY_JWT;
+        if (!secretKey) {
+            return res.status(500).json({
+                message: "JWT secret key is not configured. Please set SECRET_KEY_JWT environment variable.",
+            });
+        }
+
         const token = jwt.sign(
             {
                 data: {
                     id: existingUser._id.toString(),
                 },
             },
-            process.env.SECRET_KEY_JWT,
+            secretKey,
             { expiresIn: "1 days" },
         );
 

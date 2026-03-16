@@ -94,8 +94,20 @@ export const postCourse = async (req, res) => {
             description: parse.data.description,
             tagline: parse.data.tagline,
             thumbnail: req.file?.filename,
-            manager: req.user._id,
+            manager: req.user?._id,
         });
+
+        if (!course.thumbnail) {
+            return res.status(400).json({
+                message: "Thumbnail is required",
+            });
+        }
+
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
 
         await course.save();
 
@@ -182,6 +194,12 @@ export const deleteCourse = async (req, res) => {
 
         const course = await courseModel.findById(id);
 
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
+
         const dirname = path.resolve();
 
         const filePath = path.join(
@@ -226,6 +244,12 @@ export const getCourseById = async (req, res) => {
                         : "title type",
             });
 
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
+
         const imageUrl = process.env.APP_URL + "/uploads/courses/";
 
         return res.json({
@@ -248,6 +272,12 @@ export const postContentCourse = async (req, res) => {
         const body = req.body;
 
         const course = await courseModel.findById(body.courseId);
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
 
         const content = new courseDetailModel({
             title: body.title,
@@ -284,6 +314,12 @@ export const updateContentCourse = async (req, res) => {
         const body = req.body;
 
         const course = await courseModel.findById(body.courseId);
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
 
         await courseDetailModel.findByIdAndUpdate(
             id,

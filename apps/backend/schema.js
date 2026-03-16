@@ -1,5 +1,13 @@
 import z from "zod";
 
+// Helper function to validate MongoDB ObjectId
+const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+const isValidObjectId = (val) => objectIdRegex.test(val);
+
+const objectIdSchema = z.string().refine(isValidObjectId, {
+    message: "Invalid MongoDB ObjectId format",
+});
+
 export const exampleSchema = z.object({
     name: z.string().min(3),
 });
@@ -14,17 +22,17 @@ export const signInSchema = signUpSchema.omit({ name: true });
 
 export const mutateCourseSchema = z.object({
     name: z.string().min(5),
-    categoryId: z.string(),
+    categoryId: objectIdSchema,
     tagline: z.string().min(5),
     description: z.string().min(10),
 });
 
 export const mutateContentSchema = z.object({
     title: z.string().min(5),
-    type: z.string(),
+    type: z.enum(["video", "text"]),
     youtubeId: z.string().optional(),
     text: z.string().optional(),
-    courseId: z.string().min(5),
+    courseId: objectIdSchema,
 });
 
 export const mutateStudentSchema = z.object({
@@ -34,5 +42,5 @@ export const mutateStudentSchema = z.object({
 });
 
 export const addStudentCourseSchema = z.object({
-    studentId: z.string().min(5),
+    studentId: objectIdSchema,
 });

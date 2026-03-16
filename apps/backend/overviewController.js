@@ -3,6 +3,10 @@ import userModel from "../models/userModel.js";
 
 export const getOverviews = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
         const totalCourses = await courseModel
             .find({
                 manager: req.user._id,
@@ -64,7 +68,9 @@ export const getOverviews = async (req, res) => {
             .populate({
                 path: "students",
                 select: "name",
-            });
+            })
+            .skip(skip)
+            .limit(limit);
 
         const imageUrl = process.env.APP_URL + "/uploads/courses/";
 
@@ -76,12 +82,20 @@ export const getOverviews = async (req, res) => {
             };
         });
 
+        const totalStudentsCount = await userModel
+            .countDocuments({
+                role: "student",
+                manager: req.user._id,
+            });
+
         const students = await userModel
             .find({
                 role: "student",
                 manager: req.user._id,
             })
-            .select("name courses photo");
+            .select("name courses photo")
+            .skip(skip)
+            .limit(limit);
 
         const photoUrl = process.env.APP_URL + "/uploads/students/";
 
@@ -99,6 +113,14 @@ export const getOverviews = async (req, res) => {
                 totalStudents,
                 totalVideos,
                 totalTexts,
+                pagination: {
+                    currentPage: page,
+                    limit,
+                    totalCourses,
+                    totalStudents: totalStudentsCount,
+                    totalPages: Math.ceil(totalCourses / limit),
+                    totalStudentPages: Math.ceil(totalStudentsCount / limit),
+                },
                 courses: responseCourses,
                 students: responseStudents,
             },

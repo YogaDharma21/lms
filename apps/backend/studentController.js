@@ -41,6 +41,12 @@ export const getStudentById = async (req, res) => {
 
         const student = await userModel.findById(id);
 
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
+
         const photoUrl = process.env.APP_URL + "/uploads/students/";
 
         return res.json({
@@ -89,6 +95,18 @@ export const postStudent = async (req, res) => {
             role: "student",
         });
 
+        if (!student.photo) {
+            return res.status(400).json({
+                message: "Photo is required",
+            });
+        }
+
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         await student.save();
 
         return res.json({
@@ -128,6 +146,12 @@ export const updateStudent = async (req, res) => {
         }
 
         const student = await userModel.findById(id);
+
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
 
         if (req.file && student.photo) {
             const dirname = path.resolve();
@@ -169,6 +193,12 @@ export const deleteStudent = async (req, res) => {
         const { id } = req.params;
 
         const student = await userModel.findById(id);
+
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
 
         await courseModel.findOneAndUpdate(
             {
