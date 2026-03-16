@@ -7,6 +7,12 @@ import fs from "fs";
 
 export const getStudents = async (req, res) => {
     try {
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         const students = await userModel
             .find({
                 role: "student",
@@ -238,6 +244,12 @@ export const deleteStudent = async (req, res) => {
 
 export const getCoursesStudents = async (req, res) => {
     try {
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         const user = await userModel.findById(req.user._id).populate({
             path: "courses",
             select: "name category thumbnail",
@@ -246,6 +258,12 @@ export const getCoursesStudents = async (req, res) => {
                 select: "name",
             },
         });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
 
         const imageUrl = process.env.APP_URL + "/uploads/courses/";
 

@@ -8,6 +8,12 @@ import courseDetailModel from "../models/courseDetailModel.js";
 
 export const getCourses = async (req, res) => {
     try {
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         const courses = await courseModel
             .find({
                 manager: req.user?._id,
@@ -167,6 +173,12 @@ export const updateCourse = async (req, res) => {
         if (!category) {
             return res.status(500).json({
                 message: "Category Id not found",
+            });
+        }
+
+        if (!oldCourse) {
+            return res.status(404).json({
+                message: "Course not found",
             });
         }
 
@@ -345,6 +357,15 @@ export const updateContentCourse = async (req, res) => {
 export const deleteContentCourse = async (req, res) => {
     try {
         const { id } = req.params;
+
+        const content = await courseDetailModel.findById(id);
+
+        if (!content) {
+            return res.status(404).json({
+                message: "Content not found",
+            });
+        }
+
         await courseDetailModel.findByIdAndDelete(id);
         return res.json({
             message: "Delete Content Success",
@@ -362,6 +383,12 @@ export const getDetailContent = async (req, res) => {
         const { id } = req.params;
 
         const content = await courseDetailModel.findById(id);
+
+        if (!content) {
+            return res.status(404).json({
+                message: "Content not found",
+            });
+        }
 
         return res.json({
             message: "Get Content Detail Success",
@@ -383,6 +410,12 @@ export const getStudentsByCourseId = async (req, res) => {
             path: "students",
             select: "name email photo",
         });
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
 
         const photoUrl = process.env.APP_URL + "/uploads/students/";
 
@@ -413,6 +446,20 @@ export const postStudentToCourse = async (req, res) => {
         const { id } = req.params;
         const body = req.body;
 
+        const course = await courseModel.findById(id);
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
+
+        const student = await userModel.findById(body.studentId);
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
+
         await userModel.findByIdAndUpdate(body.studentId, {
             $push: {
                 courses: id,
@@ -440,6 +487,20 @@ export const deleteStudentToCourse = async (req, res) => {
     try {
         const { id } = req.params;
         const body = req.body;
+
+        const course = await courseModel.findById(id);
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found",
+            });
+        }
+
+        const student = await userModel.findById(body.studentId);
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
 
         await userModel.findByIdAndUpdate(body.studentId, {
             $pull: {
