@@ -12,6 +12,7 @@ export default function ManageContentCreatePage() {
     const content = useLoaderData();
     const { id, contentId } = useParams();
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         register,
@@ -40,6 +41,7 @@ export default function ManageContentCreatePage() {
     });
 
     const onSubmit = async (values: any) => {
+        setErrorMessage(""); // Clear previous error
         try {
             if (content === undefined) {
                 await mutateCreate.mutateAsync({
@@ -54,8 +56,10 @@ export default function ManageContentCreatePage() {
             }
 
             navigate(`/manager/courses/${id}`);
-        } catch (error) {
-            console.log(error);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "An error occurred. Please try again.";
+            setErrorMessage(message);
         }
     };
 
@@ -230,6 +234,11 @@ export default function ManageContentCreatePage() {
                               : "Update Content Now"}
                     </button>
                 </div>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center mt-2">
+                        {errorMessage}
+                    </p>
+                )}
             </form>
         </>
     );

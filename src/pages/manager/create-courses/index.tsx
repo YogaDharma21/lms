@@ -34,7 +34,17 @@ export default function ManageCreateCoursePage() {
 
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const inputFileRef = useRef<HTMLInputElement>(null);
+    const objectUrlRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (objectUrlRef.current) {
+                URL.revokeObjectURL(objectUrlRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (data?.course?.thumbnail_url) {
@@ -45,9 +55,14 @@ export default function ManageCreateCoursePage() {
     const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (objectUrlRef.current) {
+                URL.revokeObjectURL(objectUrlRef.current);
+            }
+
             setFile(file);
             setValue("thumbnail", file, { shouldValidate: true });
             const url = URL.createObjectURL(file);
+            objectUrlRef.current = url;
             setPreviewUrl(url);
         }
     };
@@ -63,7 +78,7 @@ export default function ManageCreateCoursePage() {
     });
 
     const onSubmit = async (values: any) => {
-        console.log(values);
+        setErrorMessage("");
         try {
             const formData = new FormData();
             formData.append("name", values.name);
@@ -81,8 +96,10 @@ export default function ManageCreateCoursePage() {
             }
 
             navigate("/manager/courses");
-        } catch (error) {
-            console.log(error);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "An error occurred. Please try again.";
+            setErrorMessage(message);
         }
     };
     return (
@@ -165,6 +182,10 @@ export default function ManageCreateCoursePage() {
                             id="delete-preview"
                             type="button"
                             onClick={() => {
+                                if (objectUrlRef.current) {
+                                    URL.revokeObjectURL(objectUrlRef.current);
+                                    objectUrlRef.current = null;
+                                }
                                 setFile(null);
                                 setPreviewUrl(null);
                                 setValue("thumbnail", null as any);
@@ -293,6 +314,11 @@ export default function ManageCreateCoursePage() {
                         Create Now
                     </button>
                 </div>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center mt-2">
+                        {errorMessage}
+                    </p>
+                )}
             </form>
         </>
     );

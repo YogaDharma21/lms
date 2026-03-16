@@ -79,7 +79,6 @@ const router = createBrowserRouter([
             if (!session || session.role !== "manager") {
                 throw redirect("/manager/sign-in");
             }
-            console.log("session loader", session);
             return session;
         },
         element: <LayoutDashboard isAdmin={true} />,
@@ -116,7 +115,6 @@ const router = createBrowserRouter([
                         params.id as string,
                         true,
                     );
-                    console.log("course detail", course);
 
                     return { categories, course: course.data };
                 },
@@ -208,7 +206,6 @@ const router = createBrowserRouter([
             if (!session || session.role !== "student") {
                 throw redirect("/student/sign-in");
             }
-            console.log("session student", session);
 
             return session;
         },
