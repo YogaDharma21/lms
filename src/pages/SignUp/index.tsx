@@ -5,6 +5,8 @@ import PricingPage from "./pricing";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "../../utils/zodSchema";
+import { useMutation } from "@tanstack/react-query";
+import { postSignUp } from "../../services/authService";
 
 export default function SignUpPage() {
     const [dataSignUp, setDataSignUp] = useState<{
@@ -13,6 +15,7 @@ export default function SignUpPage() {
         password: string;
     } | null>(null);
     const [mode, setMode] = useState("AUTH");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         register,
@@ -22,13 +25,25 @@ export default function SignUpPage() {
         resolver: zodResolver(signUpSchema),
     });
 
-    const onSubmit = (data: {
+    const { mutateAsync, isPending } = useMutation({
+        mutationFn: (data: { name: string; email: string; password: string }) =>
+            postSignUp(data),
+    });
+
+    const onSubmit = async (data: {
         name: string;
         email: string;
         password: string;
     }) => {
-        setDataSignUp(data);
-        setMode("PRICING");
+        setErrorMessage("");
+        try {
+            await mutateAsync(data);
+            setDataSignUp(data);
+            setMode("PRICING");
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
+            setErrorMessage(err.response?.data?.message || "Signup failed. Please try again.");
+        }
     };
 
     return (
@@ -132,11 +147,17 @@ export default function SignUpPage() {
                             )}
 
                             <hr className="border-[#262A56]" />
+                            {errorMessage && (
+                                <p className="text-red-500 text-xs">
+                                    {errorMessage}
+                                </p>
+                            )}
                             <button
                                 type="submit"
                                 className="w-full rounded-full border p-[14px_20px] text-center font-semibold text-white bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]"
+                                disabled={isPending}
                             >
-                                Sign Up Now
+                                {isPending ? "Signing Up..." : "Sign Up Now"}
                             </button>
                         </form>
                         <div className="flex flex-col gap-[30px]">

@@ -42,18 +42,22 @@ apiInstanceAuth.interceptors.response.use(
         const status = err?.response?.status;
 
         if (status === 400 || status === 401) {
-            const message = err?.response?.data?.message;
-
             const session = getSecureItem<Session>(STORAGE_KEY);
             const userRole = session?.role;
-            const redirectUrl = getRedirectUrl(userRole);
+            const message = err?.response?.data?.message;
 
             if (message === "Token expired" || message === "Invalid token" || message === "Unauthorization") {
                 removeSecureItem(STORAGE_KEY);
+                const redirectUrl = getRedirectUrl(userRole);
                 window.location.replace(redirectUrl);
-            } else if (status === 400) {
-                window.location.replace(redirectUrl);
-                removeSecureItem(STORAGE_KEY);
+            } else if (status === 400 || status === 401) {
+                if (session) {
+                    const redirectUrl = getRedirectUrl(userRole);
+                    window.location.replace(redirectUrl);
+                    removeSecureItem(STORAGE_KEY);
+                } else {
+                    window.location.replace("/sign-in");
+                }
             }
         }
     },

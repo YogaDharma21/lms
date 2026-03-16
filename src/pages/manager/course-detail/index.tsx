@@ -4,7 +4,6 @@ import TableContent from "./table-content";
 export default function ManageCourseDetailPage() {
     const { id } = useParams();
     const course = useLoaderData();
-    console.log("course", course);
     return (
         <>
             <div

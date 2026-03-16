@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useRevalidator } from "react-router";
 import { deleteCourse } from "../../../services/courseService";
@@ -15,19 +16,21 @@ export default function CardCourse({
     totalStudent: number;
     category: string;
 }) {
-    console.log(id);
     const revalidator = useRevalidator();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const { isPending, mutateAsync } = useMutation({
         mutationFn: () => deleteCourse(id),
     });
 
     const handleDelete = async () => {
+        setErrorMessage("");
         try {
             await mutateAsync();
             revalidator.revalidate();
         } catch (error) {
-            console.log(error);
+            const err = error as { response?: { data?: { message?: string } } };
+            setErrorMessage(err.response?.data?.message || "Failed to delete course. Please try again.");
         }
     };
     return (
@@ -85,6 +88,11 @@ export default function CardCourse({
                 >
                     Manage
                 </Link>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm mt-2">
+                        {errorMessage}
+                    </p>
+                )}
             </div>
         </div>
     );

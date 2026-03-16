@@ -4,10 +4,12 @@ import { Link, useLoaderData, useNavigate, useParams } from "react-router";
 import { addStudentCourseSchema } from "../../../utils/zodSchema";
 import { useMutation } from "@tanstack/react-query";
 import { addStudentCourse } from "../../../services/courseService";
+import { useState } from "react";
 
 export default function StudentForm() {
     const data = useLoaderData();
     const { id } = useParams();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         register,
@@ -24,11 +26,13 @@ export default function StudentForm() {
     });
 
     const onSubmit = async (values: any) => {
+        setErrorMessage("");
         try {
             await mutateAsync(values);
             navigate(`/manager/courses/students/${id}`);
         } catch (error) {
-            console.log(error);
+            const err = error as { response?: { data?: { message?: string } } };
+            setErrorMessage(err.response?.data?.message || "Failed to add student. Please try again.");
         }
     };
     return (
@@ -94,6 +98,12 @@ export default function StudentForm() {
                         {errors?.studentId?.message}
                     </span>
                 </div>
+
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center">
+                        {errorMessage}
+                    </p>
+                )}
 
                 <div className="flex items-center gap-[14px]">
                     <button

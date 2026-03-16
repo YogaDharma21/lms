@@ -4,7 +4,6 @@ import StudentItem from "./student-item";
 export default function StudentCourseList() {
     const { id } = useParams();
     const course = useLoaderData();
-    console.log(course);
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
