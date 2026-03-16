@@ -58,6 +58,21 @@ export const handlePayment = async (req, res) => {
             });
         }
 
+        // Idempotency check - prevent double processing
+        if (transaction.status === "success" && (body.transaction_status === "capture" || body.transaction_status === "settlement")) {
+            return res.json({
+                message: "Transaction already processed",
+                data: {},
+            });
+        }
+
+        if (transaction.status === "failed" && ["deny", "cancel", "expire", "failure"].includes(body.transaction_status)) {
+            return res.json({
+                message: "Transaction already processed",
+                data: {},
+            });
+        }
+
         switch (body.transaction_status) {
             case "capture":
             case "settlement":

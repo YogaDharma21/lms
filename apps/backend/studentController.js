@@ -74,6 +74,13 @@ export const postStudent = async (req, res) => {
     try {
         const body = req.body;
 
+        // Check if file was uploaded
+        if (!req.file?.filename) {
+            return res.status(400).json({
+                message: "Photo is required",
+            });
+        }
+
         const parse = mutateStudentSchema.safeParse(body);
 
         if (!parse.success) {
@@ -90,28 +97,22 @@ export const postStudent = async (req, res) => {
             });
         }
 
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         const hashPassword = bcrypt.hashSync(body.password, 12);
 
         const student = new userModel({
             name: parse.data.name,
             email: parse.data.email,
             password: hashPassword,
-            photo: req.file?.filename,
-            manager: req.user?._id,
+            photo: req.file.filename,
+            manager: req.user._id,
             role: "student",
         });
-
-        if (!student.photo) {
-            return res.status(400).json({
-                message: "Photo is required",
-            });
-        }
-
-        if (!req.user?._id) {
-            return res.status(401).json({
-                message: "Unauthorized: User ID not found",
-            });
-        }
 
         await student.save();
 
@@ -131,6 +132,14 @@ export const updateStudent = async (req, res) => {
         const { id } = req.params;
         const body = req.body;
 
+        const student = await userModel.findById(id);
+
+        if (!student) {
+            return res.status(404).json({
+                message: "Student not found",
+            });
+        }
+
         const parse = mutateStudentSchema
             .partial({
                 password: true,
@@ -148,14 +157,6 @@ export const updateStudent = async (req, res) => {
                 message: "Error Validation",
                 data: null,
                 errors: errorMessages,
-            });
-        }
-
-        const student = await userModel.findById(id);
-
-        if (!student) {
-            return res.status(404).json({
-                message: "Student not found",
             });
         }
 
@@ -206,6 +207,9 @@ export const deleteStudent = async (req, res) => {
             });
         }
 
+        // Handle case where student might not have a photo or photo is default
+        const photoToDelete = student.photo && student.photo !== "default.png" ? student.photo : null;
+
         await courseModel.findOneAndUpdate(
             {
                 students: id,
@@ -217,16 +221,18 @@ export const deleteStudent = async (req, res) => {
             },
         );
 
-        const dirname = path.resolve();
+        if (photoToDelete) {
+            const dirname = path.resolve();
 
-        const filePath = path.join(
-            dirname,
-            "public/uploads/students",
-            student.photo,
-        );
+            const filePath = path.join(
+                dirname,
+                "public/uploads/students",
+                photoToDelete,
+            );
 
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
         }
 
         await userModel.findByIdAndDelete(id);

@@ -3,6 +3,21 @@ import userModel from "../models/userModel.js";
 
 export const getOverviews = async (req, res) => {
     try {
+        // Validate that user is authenticated
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
+        // Validate APP_URL is configured
+        const imageUrl = process.env.APP_URL;
+        if (!imageUrl) {
+            return res.status(500).json({
+                message: "APP_URL is not configured. Please set APP_URL environment variable.",
+            });
+        }
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
@@ -58,7 +73,7 @@ export const getOverviews = async (req, res) => {
 
         const coursesList = await courseModel
             .find({
-                manager: req.user?._id,
+                manager: req.user._id,
             })
             .select("name thumbnail")
             .populate({
@@ -72,12 +87,10 @@ export const getOverviews = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        const imageUrl = process.env.APP_URL + "/uploads/courses/";
-
         const responseCourses = coursesList.map((item) => {
             return {
                 ...item.toObject(),
-                thumbnail_url: imageUrl + item.thumbnail,
+                thumbnail_url: imageUrl + "/uploads/courses/" + item.thumbnail,
                 total_students: item.students.length,
             };
         });
@@ -97,12 +110,10 @@ export const getOverviews = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        const photoUrl = process.env.APP_URL + "/uploads/students/";
-
         const responseStudents = students.map((item) => {
             return {
                 ...item.toObject(),
-                photo_url: photoUrl + item.photo,
+                photo_url: imageUrl + "/uploads/students/" + item.photo,
             };
         });
 

@@ -7,7 +7,7 @@ import transactionModel from "../models/transactionModel.js";
 export const signUpAction = async (req, res) => {
     const midtransUrl = process.env.MIDTRANS_URL;
     const midtransAuthString = process.env.MIDTRANS_AUTH_STRING;
-    const price = process.env.PRICE || 280000;
+    const price = process.env.PRICE;
 
     if (!midtransUrl) {
         return res.status(500).json({
@@ -18,6 +18,12 @@ export const signUpAction = async (req, res) => {
     if (!midtransAuthString) {
         return res.status(500).json({
             message: "Midtrans auth string is not configured. Please set MIDTRANS_AUTH_STRING environment variable.",
+        });
+    }
+
+    if (!price) {
+        return res.status(500).json({
+            message: "Price is not configured. Please set PRICE environment variable.",
         });
     }
 

@@ -70,6 +70,19 @@ export const postCourse = async (req, res) => {
     try {
         const body = req.body;
 
+        // Check if file was uploaded
+        if (!req.file?.filename) {
+            return res.status(400).json({
+                message: "Thumbnail is required",
+            });
+        }
+
+        if (!req.user?._id) {
+            return res.status(401).json({
+                message: "Unauthorized: User ID not found",
+            });
+        }
+
         const parse = mutateCourseSchema.safeParse(body);
 
         if (!parse.success) {
@@ -99,21 +112,9 @@ export const postCourse = async (req, res) => {
             category: category._id,
             description: parse.data.description,
             tagline: parse.data.tagline,
-            thumbnail: req.file?.filename,
-            manager: req.user?._id,
+            thumbnail: req.file.filename,
+            manager: req.user._id,
         });
-
-        if (!course.thumbnail) {
-            return res.status(400).json({
-                message: "Thumbnail is required",
-            });
-        }
-
-        if (!req.user?._id) {
-            return res.status(401).json({
-                message: "Unauthorized: User ID not found",
-            });
-        }
 
         await course.save();
 
@@ -128,7 +129,7 @@ export const postCourse = async (req, res) => {
         );
 
         await userModel.findByIdAndUpdate(
-            req.user?._id,
+            req.user._id,
             {
                 $push: {
                     courses: course._id,
@@ -188,7 +189,7 @@ export const updateCourse = async (req, res) => {
             description: parse.data.description,
             tagline: parse.data.tagline,
             thumbnail: req?.file ? req.file?.filename : oldCourse.thumbnail,
-            manager: req.user._id,
+            manager: req.user?._id,
         });
 
         return res.json({ message: "Update Course Success" });
