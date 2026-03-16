@@ -7,6 +7,7 @@ import transactionModel from "../models/transactionModel.js";
 export const signUpAction = async (req, res) => {
     const midtransUrl = process.env.MIDTRANS_URL;
     const midtransAuthString = process.env.MIDTRANS_AUTH_STRING;
+    const price = process.env.PRICE || 280000;
 
     if (!midtransUrl) {
         return res.status(500).json({
@@ -35,7 +36,7 @@ export const signUpAction = async (req, res) => {
 
         const transaction = new TransactionModel({
             user: user._id,
-            price: 280000,
+            price: price,
         });
 
         const midtrans = await fetch(midtransUrl, {
