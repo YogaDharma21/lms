@@ -7,9 +7,11 @@ import { setSecureItem } from "../../utils/secureStorage";
 import { STORAGE_KEY } from "../../utils/const";
 import { useMutation } from "@tanstack/react-query";
 import { postSignIn } from "../../services/authService";
+import { useState } from "react";
 
 export default function SignInPage({ type = "manager" }: { type: string }) {
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         register,
@@ -25,8 +27,18 @@ export default function SignInPage({ type = "manager" }: { type: string }) {
     });
 
     const onSubmit = async (data: { email: string; password: string }) => {
+        setErrorMessage(""); 
         try {
             const response = await mutateAsync(data);
+            const serverRole = response.data.role;
+
+            const expectedRole = type;
+
+            if (serverRole !== expectedRole) {
+                setErrorMessage(`Invalid login type. You are registered as a ${serverRole}. Please use the ${serverRole} login page.`);
+                return;
+            }
+
             setSecureItem(STORAGE_KEY, response.data);
 
             if (response.data.role === "manager") {
@@ -34,8 +46,10 @@ export default function SignInPage({ type = "manager" }: { type: string }) {
             } else {
                 navigate("/student");
             }
-        } catch (error) {
-            console.log(error);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "Login failed. Please check your credentials and try again.";
+            setErrorMessage(message);
         }
     };
     return (
@@ -133,6 +147,11 @@ export default function SignInPage({ type = "manager" }: { type: string }) {
                         ? "Signing In..."
                         : `Sign In to ${type === "manager" ? "Manage" : "View"}`}
                 </button>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center mt-2">
+                        {errorMessage}
+                    </p>
+                )}
             </form>
         </div>
     );

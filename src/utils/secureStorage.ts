@@ -1,8 +1,10 @@
 import * as CryptoJS from "crypto-js";
 
-const SECRET_KEY =
-    import.meta.env.VITE_SECRET_KEY ||
-    "default-secret-key-change-in-production";
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
+if (!SECRET_KEY) {
+    throw new Error("VITE_SECRET_KEY environment variable is not set. Please configure it in your .env file.");
+}
 
 export const encryptData = (data: unknown): string => {
     const jsonString = JSON.stringify(data);

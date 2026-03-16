@@ -1,11 +1,18 @@
 import axios from "axios";
 import { getSecureItem, removeSecureItem } from "./secureStorage";
 import { STORAGE_KEY } from "./const";
-const baseURL = import.meta.env.VITE_API_URL;
+
 interface Session {
     token: string;
+    role?: string;
     [key: string]: unknown;
 }
+
+const baseURL = import.meta.env.VITE_API_URL;
+
+const getRedirectUrl = (role?: string): string => {
+    return role === "student" ? "/student/sign-in" : "/manager/sign-in";
+};
 
 const apiInstance = axios.create({
     baseURL,
@@ -36,12 +43,16 @@ apiInstanceAuth.interceptors.response.use(
 
         if (status === 400 || status === 401) {
             const message = err?.response?.data?.message;
-            
+
+            const session = getSecureItem<Session>(STORAGE_KEY);
+            const userRole = session?.role;
+            const redirectUrl = getRedirectUrl(userRole);
+
             if (message === "Token expired" || message === "Invalid token" || message === "Unauthorization") {
                 removeSecureItem(STORAGE_KEY);
-                window.location.replace("/manager/sign-in");
+                window.location.replace(redirectUrl);
             } else if (status === 400) {
-                window.location.replace("/manager/sign-in");
+                window.location.replace(redirectUrl);
                 removeSecureItem(STORAGE_KEY);
             }
         }

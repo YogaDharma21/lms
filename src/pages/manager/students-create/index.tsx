@@ -15,7 +15,17 @@ export default function ManageStudentCreatePage() {
 
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const inputFileRef = useRef<HTMLInputElement>(null);
+    const objectUrlRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (objectUrlRef.current) {
+                URL.revokeObjectURL(objectUrlRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (student?.photo_url) {
@@ -41,9 +51,14 @@ export default function ManageStudentCreatePage() {
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (objectUrlRef.current) {
+                URL.revokeObjectURL(objectUrlRef.current);
+            }
+
             setFile(file);
             setValue("photo" as any, file, { shouldValidate: true });
             const url = URL.createObjectURL(file);
+            objectUrlRef.current = url;
             setPreviewUrl(url);
         }
     };
@@ -59,6 +74,7 @@ export default function ManageStudentCreatePage() {
     });
 
     const onSubmit = async (values: any) => {
+        setErrorMessage(""); // Clear previous error
         try {
             const formData = new FormData();
             formData.append("name", values.name);
@@ -77,8 +93,10 @@ export default function ManageStudentCreatePage() {
             }
 
             navigate("/manager/students");
-        } catch (error) {
-            console.log(error);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "An error occurred. Please try again.";
+            setErrorMessage(message);
         }
     };
     return (
@@ -250,6 +268,11 @@ export default function ManageStudentCreatePage() {
                         {isEditMode ? "Update Now" : "Add Now"}
                     </button>
                 </div>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center mt-2">
+                        {errorMessage}
+                    </p>
+                )}
             </form>
         </>
     );
