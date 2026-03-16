@@ -8,6 +8,18 @@ export const signUpAction = async (req, res) => {
     const midtransUrl = process.env.MIDTRANS_URL;
     const midtransAuthString = process.env.MIDTRANS_AUTH_STRING;
 
+    if (!midtransUrl) {
+        return res.status(500).json({
+            message: "Midtrans URL is not configured. Please set MIDTRANS_URL environment variable.",
+        });
+    }
+
+    if (!midtransAuthString) {
+        return res.status(500).json({
+            message: "Midtrans auth string is not configured. Please set MIDTRANS_AUTH_STRING environment variable.",
+        });
+    }
+
     try {
         const body = req.body;
 

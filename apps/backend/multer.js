@@ -6,9 +6,10 @@ export const fileStorage = (path = "courses") =>
             cb(null, `public/uploads/${path}`);
         },
         filename: (req, file, cb) => {
-            const ext = file.originalname.split(".")[1];
+            const originalName = file.originalname.split(".");
+            const ext = originalName.length > 1 ? originalName[1] : "";
             const uniqId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-            cb(null, `${file.fieldname}-${uniqId}.${ext}`);
+            cb(null, `${file.fieldname}-${uniqId}${ext ? `.${ext}` : ""}`);
         },
     });
     
