@@ -8,7 +8,7 @@ import { STORAGE_KEY } from "../../utils/const";
 import { useMutation } from "@tanstack/react-query";
 import { postSignIn } from "../../services/authService";
 
-export default function SignInPage() {
+export default function SignInPage({ type = "manager" }: { type: string }) {
     const navigate = useNavigate();
 
     const {
@@ -50,13 +50,15 @@ export default function SignInPage() {
             <nav className="flex items-center justify-between p-[30px]">
                 <Navbar />
                 <div className="flex items-center gap-3">
-                    <Link to="/manager/sign-up">
-                        <div className="flex items-center gap-3 w-fit rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                            <span className="font-semibold text-white">
-                                Sign Up
-                            </span>
-                        </div>
-                    </Link>
+                    {type === "manager" && (
+                        <Link to="/manager/sign-up">
+                            <div className="flex items-center gap-3 w-fit rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
+                                <span className="font-semibold text-white">
+                                    Sign Up
+                                </span>
+                            </div>
+                        </Link>
+                    )}
                 </div>
             </nav>
             <form
@@ -127,7 +129,9 @@ export default function SignInPage() {
                     type="submit"
                     className="w-full rounded-full border p-[14px_20px] text-center font-semibold text-white bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]"
                 >
-                    {isPending ? "Signing In..." : "Sign In to Manage"}
+                    {isPending
+                        ? "Signing In..."
+                        : `Sign In to ${type === "manager" ? "Manage" : "View"}`}
                 </button>
             </form>
         </div>

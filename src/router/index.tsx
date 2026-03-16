@@ -1,6 +1,6 @@
 import { createBrowserRouter, redirect } from "react-router";
 import { getSecureItem } from "../utils/secureStorage";
-import { MANAGER_SESSION, STORAGE_KEY } from "../utils/const";
+import { MANAGER_SESSION, STORAGE_KEY, STUDENT_SESSION } from "../utils/const";
 import ManagerHome from "../pages/manager/home";
 import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
@@ -21,7 +21,11 @@ import {
     getDetailContent,
     getStudentCourse,
 } from "../services/courseService";
-import { getDetailStudent, getStudents } from "../services/studentService";
+import {
+    getCoursesStudents,
+    getDetailStudent,
+    getStudents,
+} from "../services/studentService";
 import StudentCourseList from "../pages/manager/student-course";
 import StudentForm from "../pages/manager/student-course/student-form";
 import { getOverviews } from "../services/overviewService";
@@ -47,7 +51,7 @@ const router = createBrowserRouter([
 
             return session;
         },
-        element: <SignInPage />,
+        element: <SignInPage type="manager" />,
     },
     {
         path: "/manager/sign-up",
@@ -197,17 +201,53 @@ const router = createBrowserRouter([
     },
     {
         path: "/student",
+        id: STUDENT_SESSION,
         element: <LayoutDashboard isAdmin={false} />,
+        loader: async () => {
+            const session = getSecureItem<Session>(STORAGE_KEY);
+            if (!session || session.role !== "student") {
+                throw redirect("/student/sign-in");
+            }
+            console.log("session student", session);
+
+            return session;
+        },
         children: [
             {
                 index: true,
+                loader: async () => {
+                    const courses = await getCoursesStudents();
+
+                    return courses?.data;
+                },
                 element: <StudentPage />,
             },
             {
                 path: "/student/detail-course/:id",
-                element: <ManageCoursePreviewPage />,
+                loader: async ({ params }) => {
+                    const course = await getCourseDetail(
+                        params.id as string,
+                        true,
+                    );
+
+                    return course.data;
+                },
+                element: <ManageCoursePreviewPage isAdmin={false} />,
             },
         ],
+    },
+    {
+        path: "/student/sign-in",
+        loader: async () => {
+            const session = getSecureItem<Session>(STORAGE_KEY);
+
+            if (session?.role === "student") {
+                throw redirect("/student");
+            }
+
+            return session;
+        },
+        element: <SignInPage type="student" />,
     },
 ]);
 export default router;
