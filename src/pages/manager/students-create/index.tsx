@@ -155,6 +155,10 @@ export default function ManageStudentCreatePage() {
                                 id="delete-preview"
                                 className={`absolute right-1 bottom-1 w-8 h-8 rounded-full z-10 ${previewUrl ? "block" : "hidden"}`}
                                 onClick={() => {
+                                    if (objectUrlRef.current) {
+                                        URL.revokeObjectURL(objectUrlRef.current);
+                                        objectUrlRef.current = null;
+                                    }
                                     setFile(null);
                                     setPreviewUrl(null);
                                     setValue("photo" as any, null as any);
