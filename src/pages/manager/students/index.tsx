@@ -3,7 +3,6 @@ import StudentItem from "./student-item";
 
 export default function ManageStudentsPage() {
     const students = useLoaderData();
-    console.log("students", students);
     return (
         <>
             <header className="flex items-center justify-between gap-[30px]">
@@ -34,9 +33,9 @@ export default function ManageStudentsPage() {
                 id="CourseList"
                 className="flex flex-col w-full rounded-[30px] p-[30px] gap-[30px] bg-[#F8FAFB]"
             >
-                {students?.map((item: any, i: number) => (
+                {students?.map((item: any) => (
                     <StudentItem
-                        key={i}
+                        key={item._id}
                         imageUrl={item.photo_url}
                         name={item.name}
                         totalCourse={item.totalCourse}

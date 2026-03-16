@@ -2,25 +2,31 @@ import { Link } from "react-router";
 import Navbar from "../../components/Navbar";
 import { useMutation } from "@tanstack/react-query";
 import { postSignUp } from "../../services/authService";
+import { useState } from "react";
 
 export default function PricingPage({
     data,
 }: {
     data: { name: string; email: string; password: string } | null;
 }) {
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
     const { isPending, mutateAsync } = useMutation({
         mutationFn: (signupData: { name: string; email: string; password: string }) => postSignUp(signupData),
     });
 
     const submitData = async () => {
+        setErrorMessage("");
         try {
             if (!data) {
                 return;
             }
             const response = await mutateAsync(data);
             window.location.replace(response?.data?.midtrans_payment_url);
-        } catch (error) {
-            console.log(error);
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || "Signup failed. Please try again.";
+            setErrorMessage(message);
         }
     };
 
@@ -201,6 +207,11 @@ export default function PricingPage({
                         </Link>
                     </div>
                 </div>
+                {errorMessage && (
+                    <p className="text-red-500 text-sm text-center mt-4">
+                        {errorMessage}
+                    </p>
+                )}
             </div>
         </div>
     );
