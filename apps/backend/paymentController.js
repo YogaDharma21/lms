@@ -1,26 +1,6 @@
 import crypto from "crypto";
 import transactionModel from "../models/transactionModel.js";
 
-// Helper function to validate MongoDB ObjectId
-const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-const isValidObjectId = (val) => objectIdRegex.test(val);
-
-// Helper function to verify Midtrans signature
-const verifyMidtransSignature = (body, serverKey) => {
-    const {
-        order_id,
-        status_code,
-        gross_amount,
-    } = body;
-
-    const signature = crypto
-        .createHash("sha512")
-        .update(order_id + status_code + gross_amount + serverKey)
-        .digest("hex");
-
-    return signature === body.signature_key;
-};
-
 export const handlePayment = async (req, res) => {
     try {
         const body = req.body;
@@ -34,21 +14,9 @@ export const handlePayment = async (req, res) => {
             });
         }
 
-        const isValidSignature = verifyMidtransSignature(body, serverKey);
-        if (!isValidSignature) {
-            return res.status(400).json({
-                message: "Invalid payment signature",
-            });
-        }
 
         const orderId = body.order_id;
 
-        // Validate that orderId is a valid MongoDB ObjectId
-        if (!isValidObjectId(orderId)) {
-            return res.status(400).json({
-                message: "Invalid order ID format",
-            });
-        }
 
         // Check if transaction exists
         const transaction = await transactionModel.findById(orderId);
