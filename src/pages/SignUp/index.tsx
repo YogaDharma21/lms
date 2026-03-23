@@ -14,6 +14,7 @@ export default function SignUpPage() {
         email: string;
         password: string;
     } | null>(null);
+    const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
     const [mode, setMode] = useState("AUTH");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -37,8 +38,9 @@ export default function SignUpPage() {
     }) => {
         setErrorMessage("");
         try {
-            await mutateAsync(data);
+            const response = await mutateAsync(data);
             setDataSignUp(data);
+            setPaymentUrl(response?.data?.midtrans_payment_url);
             setMode("PRICING");
         } catch (error) {
             const err = error as { response?: { data?: { message?: string } } };
@@ -173,7 +175,7 @@ export default function SignUpPage() {
                     </div>
                 </div>
             ) : (
-                <PricingPage data={dataSignUp} />
+                <PricingPage data={dataSignUp} paymentUrl={paymentUrl} />
             )}
         </>
     );

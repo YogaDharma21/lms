@@ -1,32 +1,21 @@
 import { Link } from "react-router";
 import Navbar from "../../components/Navbar";
-import { useMutation } from "@tanstack/react-query";
-import { postSignUp } from "../../services/authService";
 import { useState } from "react";
 
 export default function PricingPage({
     data,
+    paymentUrl,
 }: {
     data: { name: string; email: string; password: string } | null;
+    paymentUrl: string | null;
 }) {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
-    const { isPending, mutateAsync } = useMutation({
-        mutationFn: (signupData: { name: string; email: string; password: string }) => postSignUp(signupData),
-    });
-
-    const submitData = async () => {
-        setErrorMessage("");
-        try {
-            if (!data) {
-                return;
-            }
-            const response = await mutateAsync(data);
-            window.location.replace(response?.data?.midtrans_payment_url);
-        } catch (error: unknown) {
-            const err = error as { response?: { data?: { message?: string } } };
-            const message = err.response?.data?.message || "Signup failed. Please try again.";
-            setErrorMessage(message);
+    const submitData = () => {
+        if (paymentUrl) {
+            window.location.replace(paymentUrl);
+        } else {
+            setErrorMessage("No payment session found. Please sign up again.");
         }
     };
 
@@ -183,21 +172,13 @@ export default function PricingPage({
                     </div>
                     <hr className="border-[#262A56]" />
                     <div className="flex flex-col gap-3">
-                        {isPending ? (
-                            <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
-                                <span className="font-semibold text-white">
-                                    Choosing this plan...
-                                </span>
-                            </div>
-                        ) : (
-                        <button type="button" onClick={submitData} disabled={isPending}>
+                        <button type="button" onClick={submitData}>
                             <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#662FFF] border-[#8661EE] shadow-[-10px_-6px_10px_0_#7F33FF_inset]">
                                 <span className="font-semibold text-white">
                                     Choose This Plan
                                 </span>
                             </div>
                         </button>
-                        )}
                         <Link to="#">
                             <div className="flex items-center justify-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] bg-[#070B24] border-[#24283E] shadow-[-10px_-6px_10px_0_#181A35_inset]">
                                 <span className="font-semibold text-white">
