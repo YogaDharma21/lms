@@ -1,26 +1,28 @@
-# Starter Kit
+# LMS (Learning Management System)
 
-A **polyglot monorepo** template for managing multiple independent projects in various languages and frameworks.
+A full-stack Learning Management System where teachers pay to subscribe, create courses, and manage student access.
 
-## Philosophy
+## Tech Stack
 
-- **No shared code** - Each app is completely independent
-- **Each app lives alone** - Self-contained with own dependencies, build system, and configuration
-- **Language agnostic** - Use any framework or language per app
+- **Frontend**: React + TypeScript + Vite + Tailwind CSS
+- **Backend**: Node.js + Express + MongoDB
+
+## How It Works
+
+1. **Teachers** sign up and pay to access the platform
+2. **Teachers** create courses with videos and text content
+3. **Teachers** add students who can then login and access their courses
+4. **Students** can only login - they are added by teachers (cannot sign up themselves)
 
 ## Project Structure
 
 ```
-apps/           # All projects (web, mobile, desktop, backend, cli)
-├── web/        # Frontend applications
-├── mobile/     # Mobile applications
-├── desktop/    # Desktop applications
-├── backend/    # Backend services
-└── cli/        # Command-line tools
+apps/
+├── web/        # React frontend (Tailwind CSS)
+├── backend/    # Express.js backend (MongoDB)
 
 docker/         # Docker configurations
 docs/           # Architecture documentation
-scripts/        # Utility scripts
 .github/        # CI/CD workflows
 ```
 
@@ -28,24 +30,28 @@ scripts/        # Utility scripts
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (for JS/TS projects)
-- [Docker](https://www.docker.com/) (for containerization)
-- [Python](https://www.python.org/) (for Python projects)
-- [Go](https://go.dev/) (for Go projects)
-- [Rust](https://www.rust-lang.org/) (for Rust projects)
+- [Node.js](https://nodejs.org/)
+- [Docker](https://www.docker.com/)
+- [MongoDB](https://www.mongodb.com/)
 
-### Creating a New App
+### Running Locally
 
-1. Navigate to the appropriate folder under `apps/`
-2. Initialize your project:
+#### Backend
 
 ```bash
-# Example: Creating a new web app
-cd apps/web
-npm create vite@latest my-app -- --template react
+cd apps/backend
+npm install
+# Configure .env file (see .env.example)
+npm run dev
 ```
 
-3. Update the CI workflow in `.github/workflows/ci.yml` if needed
+#### Frontend
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
 
 ### Running with Docker
 
@@ -54,15 +60,28 @@ npm create vite@latest my-app -- --template react
 docker-compose -f docker/docker-compose.yml up
 
 # Start specific service
+docker-compose -f docker/docker-compose.yml up backend
 docker-compose -f docker/docker-compose.yml up web
 ```
 
-## CI/CD
+## Routes
 
-This repository uses GitHub Actions with path-based filtering:
-- Changes to `apps/web/**` trigger web app builds
-- Changes to `apps/backend/**` trigger backend builds
-- Each app category has its own job
+| Path | Description |
+|------|-------------|
+| `/` | Landing page with login options |
+| `/manager/sign-in` | Manager login |
+| `/manager/sign-up` | Manager signup (with payment) |
+| `/manager` | Manager dashboard |
+| `/student/sign-in` | Student login |
+| `/student` | Student dashboard |
+
+## Features
+
+- Course management (create, edit, delete)
+- Video and text content
+- Student enrollment
+- Progress tracking
+- Payment integration (Midtrans)
 
 ## License
 

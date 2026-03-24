@@ -1,6 +1,11 @@
 # Docker Configuration
 
-This folder contains Docker configurations for the monorepo.
+This folder contains Docker configurations for running the LMS application.
+
+## Services
+
+- **backend**: Node.js Express API with MongoDB
+- **web**: React frontend (Vite)
 
 ## Usage
 
@@ -13,7 +18,8 @@ docker-compose -f docker/docker-compose.yml up
 ### Starting specific service
 
 ```bash
-docker-compose -f docker/docker-compose.yml up <service-name>
+docker-compose -f docker/docker-compose.yml up backend
+docker-compose -f docker/docker-compose.yml up web
 ```
 
 ### Stopping services
@@ -22,28 +28,13 @@ docker-compose -f docker/docker-compose.yml up <service-name>
 docker-compose -f docker/docker-compose.yml down
 ```
 
-## Adding a new service
+## Environment Variables
 
-1. Add your service to `docker-compose.yml`
-2. Each app in `/apps/*` should have its own `Dockerfile`
-3. Reference the app directory in the service configuration
-
-Example:
-
-```yaml
-services:
-  web:
-    build: 
-      context: ../apps/web
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-```
+Each service requires environment variables defined in their respective `.env` files:
+- `/apps/backend/.env` - Backend configuration (MongoDB, JWT, Midtrans, etc.)
 
 ## Notes
 
-- This is a placeholder for future docker configurations
-- Each app is responsible for its own Dockerfile
-- The root docker-compose.yml orchestrates all apps
+- The backend and web services communicate via internal Docker network
+- Ports are exposed as defined in docker-compose.yml
+- MongoDB can be either local or containerized
