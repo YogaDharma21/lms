@@ -3,11 +3,17 @@ import { mutateCategorySchema } from "../utils/schema.js";
 
 export const getAllCategories = async (req, res) => {
     try {
-        const categories = await categoryModel.find().select("name _id");
+        const categories = await categoryModel.find().select("name _id courses");
+        
+        const response = categories.map((item) => ({
+            _id: item._id,
+            name: item.name,
+            total_courses: item.courses ? item.courses.length : 0,
+        }));
 
         return res.json({
             message: "Get categories success",
-            data: categories,
+            data: response,
         });
     } catch (error) {
         console.log(error);
