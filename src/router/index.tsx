@@ -29,6 +29,9 @@ import {
 import StudentCourseList from "../pages/manager/student-course";
 import StudentForm from "../pages/manager/student-course/student-form";
 import { getOverviews } from "../services/overviewService";
+import ManageCategoriesPage from "../pages/manager/categories";
+import ManageCategoryEditPage from "../pages/manager/categories/edit";
+import { getCategory } from "../services/categoryService";
 
 interface Session {
     role: string;
@@ -194,6 +197,22 @@ const router = createBrowserRouter([
                     return student?.data;
                 },
                 element: <StudentForm />,
+            },
+            {
+                path: "/manager/categories",
+                loader: async () => {
+                    const categories = await getCategories();
+                    return categories?.data;
+                },
+                element: <ManageCategoriesPage />,
+            },
+            {
+                path: "/manager/categories/edit/:id",
+                loader: async ({ params }) => {
+                    const category = await getCategory(params.id as string);
+                    return category?.data;
+                },
+                element: <ManageCategoryEditPage />,
             },
         ],
     },

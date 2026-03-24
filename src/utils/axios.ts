@@ -27,8 +27,12 @@ export const apiInstanceAuth = axios.create({
 apiInstanceAuth.interceptors.request.use((config) => {
     const session = getSecureItem<Session>(STORAGE_KEY);
 
-    if (!session) {
+    if (!session || !session.token) {
         return config;
+    }
+
+    if (config.data instanceof FormData) {
+        delete config.headers["Content-Type"];
     }
 
     config.headers.Authorization = `JWT ${session.token}`;
@@ -41,7 +45,7 @@ apiInstanceAuth.interceptors.response.use(
     (err) => {
         const status = err?.response?.status;
 
-        if (status === 400 || status === 401) {
+        if (status === 401) {
             const session = getSecureItem<Session>(STORAGE_KEY);
             const userRole = session?.role;
             const message = err?.response?.data?.message;
@@ -50,15 +54,10 @@ apiInstanceAuth.interceptors.response.use(
                 removeSecureItem(STORAGE_KEY);
                 const redirectUrl = getRedirectUrl(userRole);
                 window.location.replace(redirectUrl);
-            } else if (status === 400 || status === 401) {
-                if (session) {
-                    const redirectUrl = getRedirectUrl(userRole);
-                    window.location.replace(redirectUrl);
-                    removeSecureItem(STORAGE_KEY);
-                } else {
-                    const redirectUrl = getRedirectUrl(userRole);
-                    window.location.replace(redirectUrl);
-                }
+            } else {
+                const redirectUrl = getRedirectUrl(userRole);
+                window.location.replace(redirectUrl);
+                removeSecureItem(STORAGE_KEY);
             }
         }
     },
