@@ -26,59 +26,29 @@ export default function TableContent({
                     </Link>
                 </div>
 
-                {details.map((item: any, i: number) => (
-                    <ContentItem
-                        key={item._id}
-                        id={item._id}
-                        index={i + 1}
-                        type={item.type}
-                        title={item.title}
-                        courseId={courseId}
-                    />
-                ))}
-
-                <div id="Pagination" className="flex items-center gap-3">
-                    <button
-                        type="button"
-                        className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 bg-[#662FFF] text-white"
-                    >
-                        <span className="font-semibold text-sm leading-[21px]">
-                            1
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                    >
-                        <span className="font-semibold text-sm leading-[21px]">
-                            2
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                    >
-                        <span className="font-semibold text-sm leading-[21px]">
-                            3
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                    >
-                        <span className="font-semibold text-sm leading-[21px]">
-                            4
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                    >
-                        <span className="font-semibold text-sm leading-[21px]">
-                            5
-                        </span>
-                    </button>
-                </div>
+                {details && details.length > 0 ? (
+                    details.map((item: any, i: number) => (
+                        <ContentItem
+                            key={item._id}
+                            id={item._id}
+                            index={i + 1}
+                            type={item.type}
+                            title={item.title}
+                            courseId={courseId}
+                        />
+                    ))
+                ) : (
+                    <div className="flex items-center justify-center py-12">
+                        <div className="text-center">
+                            <p className="text-[#838C9D] text-lg font-semibold">
+                                No content yet
+                            </p>
+                            <p className="text-[#838C9D] mt-2">
+                                Add your first content to get started
+                            </p>
+                        </div>
+                    </div>
+                )}
             </section>
         </>
     );

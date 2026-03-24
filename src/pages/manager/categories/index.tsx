@@ -75,7 +75,12 @@ export default function ManageCategoriesPage() {
 
                 {categories && categories.length > 0 ? (
                     categories.map((item: any) => (
-                        <CategoryItem key={item._id} name={item.name} id={item._id} />
+                        <CategoryItem 
+                            key={item._id} 
+                            name={item.name} 
+                            id={item._id} 
+                            totalCourses={Number(item.total_courses) || item.courses?.length || 0} 
+                        />
                     ))
                 ) : (
                     <div className="flex items-center justify-center py-12">

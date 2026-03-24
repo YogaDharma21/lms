@@ -211,12 +211,6 @@ export default function ManageContentCreatePage() {
                 )}
                 <div className="flex items-center gap-[14px]">
                     <button
-                        type="button"
-                        className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                    >
-                        Save as Draft
-                    </button>
-                    <button
                         type="submit"
                         disabled={
                             content === undefined
@@ -227,11 +221,11 @@ export default function ManageContentCreatePage() {
                     >
                         {content === undefined
                             ? mutateCreate.isPending
-                                ? "Adding Content..."
-                                : "Add Content Now"
+                                ? "Adding..."
+                                : "Add Content"
                             : mutateUpdate.isPending
-                              ? "Updating Content..."
-                              : "Update Content Now"}
+                              ? "Saving..."
+                              : "Save Changes"}
                     </button>
                 </div>
                 {errorMessage && (

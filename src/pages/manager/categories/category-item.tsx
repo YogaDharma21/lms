@@ -6,9 +6,11 @@ import { useState } from "react";
 export default function CategoryItem({
     name,
     id,
+    totalCourses,
 }: {
     name: string;
     id: string;
+    totalCourses: number;
 }) {
     const revalidator = useRevalidator();
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -36,6 +38,9 @@ export default function CategoryItem({
                     <h3 className="font-bold text-xl leading-[30px] line-clamp-1">
                         {name}
                     </h3>
+                    <p className="text-[#838C9D] text-sm mt-1">
+                        {totalCourses} {totalCourses === 1 ? "course" : "courses"}
+                    </p>
                 </div>
                 <div className="flex justify-end items-center gap-3">
                     <Link

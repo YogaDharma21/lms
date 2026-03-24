@@ -61,39 +61,47 @@ export default function StudentForm() {
             >
                 <div className="flex flex-col gap-[10px]">
                     <label className="font-semibold" htmlFor="category">
-                        Select Category
+                        Select Student
                     </label>
-                    <div className="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
-                        <img
-                            alt="icon"
-                            className="w-6 h-6"
-                            src="/assets/images/icons/bill-black.svg"
-                        />
-                        <select
-                            className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
-                            id="studentId"
-                            {...register("studentId")}
-                        >
-                            <option hidden value="">
-                                Choose one student
-                            </option>
-                            {data?.map(
-                                (item: { _id: number; name: string }) => (
-                                    <option
-                                        key={item._id}
-                                        value={String(item._id)}
-                                    >
-                                        {item.name}
-                                    </option>
-                                ),
-                            )}
-                        </select>
-                        <img
-                            alt="icon"
-                            className="w-6 h-6"
-                            src="/assets/images/icons/arrow-down.svg"
-                        />
-                    </div>
+                    {data && data.length > 0 ? (
+                        <div className="flex items-center w-full rounded-full border border-[#CFDBEF] gap-3 px-5 transition-all duration-300 focus-within:ring-2 focus-within:ring-[#662FFF]">
+                            <img
+                                alt="icon"
+                                className="w-6 h-6"
+                                src="/assets/images/icons/bill-black.svg"
+                            />
+                            <select
+                                className="appearance-none outline-none w-full py-3 px-2 -mx-2 font-semibold placeholder:font-normal placeholder:text-[#838C9D] !bg-transparent"
+                                id="studentId"
+                                {...register("studentId")}
+                            >
+                                <option hidden value="">
+                                    Choose one student
+                                </option>
+                                {data?.map(
+                                    (item: { _id: number; name: string }) => (
+                                        <option
+                                            key={item._id}
+                                            value={String(item._id)}
+                                        >
+                                            {item.name}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                            <img
+                                alt="icon"
+                                className="w-6 h-6"
+                                src="/assets/images/icons/arrow-down.svg"
+                            />
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center py-8 rounded-[20px] border border-[#CFDBEF]">
+                            <p className="text-[#838C9D] text-lg font-semibold">
+                                No student yet
+                            </p>
+                        </div>
+                    )}
                     <span className="error-message text-[#FF435A]">
                         {errors?.studentId?.message}
                     </span>
@@ -106,16 +114,16 @@ export default function StudentForm() {
                 )}
 
                 <div className="flex items-center gap-[14px]">
-                    <button
-                        className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        type="button"
+                    <Link
+                        className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap text-center"
+                        to={`/manager/courses/students/${id}`}
                     >
-                        Save as Draft
-                    </button>
+                        Cancel
+                    </Link>
                     <button
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                         type="submit"
-                        disabled={isPending}
+                        disabled={isPending || !data || data.length === 0}
                     >
                         {isPending ? "Adding..." : "Add Now"}
                     </button>
