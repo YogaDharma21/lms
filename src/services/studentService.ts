@@ -8,20 +8,12 @@ export const getDetailStudent = async (id: string) =>
 
 export const createStudent = async (courseData: FormData) =>
     apiInstanceAuth
-        .post("/students", courseData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
+        .post("/students", courseData)
         .then((res) => res.data);
 
 export const updateStudent = async (data: any, id: string) =>
     apiInstanceAuth
-        .put(`/students/${id}`, data, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
+        .put(`/students/${id}`, data)
         .then((res) => res.data);
 
 export const deleteStudent = async (id: string) =>

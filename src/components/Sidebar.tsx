@@ -55,7 +55,7 @@ export default function Sidebar({ isAdmin = true }: { isAdmin: boolean }) {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="#">
+                                    <Link to="/manager/categories">
                                         <div className={`flex items-center gap-3 w-full rounded-full border p-[14px_20px] transition-all duration-300 hover:bg-[#662FFF] hover:border-[#8661EE] hover:shadow-[-10px_-6px_10px_0_#7F33FF_inset] ${isActive("/manager/categories") ? activeClass : inactiveClass}`}>
                                             <img
                                                 alt="icon"

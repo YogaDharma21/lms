@@ -13,20 +13,12 @@ export const getCourseDetail = async (id: string, isPreview: boolean = false) =>
 
 export const createCourse = async (courseData: FormData) =>
     apiInstanceAuth
-        .post("/courses", courseData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
+        .post("/courses", courseData)
         .then((res) => res.data);
 
 export const updateCourse = async (data: FormData, id: string) =>
     apiInstanceAuth
-        .put(`/courses/${id}`, data, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
+        .put(`/courses/${id}`, data)
         .then((res) => res.data);
 
 export const deleteCourse = async (id: string) =>
