@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect } from "react-router";
 import { getSecureItem } from "../utils/secureStorage";
 import { MANAGER_SESSION, STORAGE_KEY, STUDENT_SESSION } from "../utils/const";
 import ManagerHome from "../pages/manager/home";
+import Landing from "../pages/Landing";
 import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
 import SuccessCheckoutPage from "../pages/SuccessCheckout";
@@ -41,7 +42,13 @@ interface Session {
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <ManagerHome />,
+        element: <Landing />,
+    },
+    {
+        path: "/manager",
+        loader: async () => {
+            throw redirect("/manager/");
+        },
     },
     {
         path: "/manager/sign-in",
