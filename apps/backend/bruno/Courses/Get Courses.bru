@@ -1,0 +1,25 @@
+meta {
+  name: Get Courses
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{PROJECT_URL}}/api/courses
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: JWT {{JWT_TOKEN}}
+}
+
+vars:pre-request {
+  PROJECT_URL: http://localhost:3000
+  JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjljMTRlNWVkYzUwNGVkZGJjMGNhZjAyIn0sImlhdCI6MTc3NDMxMjAzMiwiZXhwIjoxNzc0Mzk4NDMyfQ.ZxPwd--6e6Ri3Xok78ObWHcRSrP6cf0LbsvYtBjlngE
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

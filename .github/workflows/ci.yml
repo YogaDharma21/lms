@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+      desktop: ${{ steps.filter.outputs.desktop }}
+      backend: ${{ steps.filter.outputs.backend }}
+      cli: ${{ steps.filter.outputs.cli }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+            mobile:
+              - 'apps/mobile/**'
+            desktop:
+              - 'apps/desktop/**'
+            backend:
+              - 'apps/backend/**'
+            cli:
+              - 'apps/cli/**'
+
+  build-web:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Web App
+        run: echo "Building web app"
+      - name: Test Web App
+        run: echo "Testing web app"
+
+  build-mobile:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Mobile App
+        run: echo "Building mobile app"
+      - name: Test Mobile App
+        run: echo "Testing mobile app"
+
+  build-desktop:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.desktop == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Desktop App
+        run: echo "Building desktop app"
+      - name: Test Desktop App
+        run: echo "Testing desktop app"
+
+  build-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Backend App
+        run: echo "Building backend app"
+      - name: Test Backend App
+        run: echo "Testing backend app"
+
+  build-cli:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.cli == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI App
+        run: echo "Building CLI app"
+      - name: Test CLI App
+        run: echo "Testing CLI app"
