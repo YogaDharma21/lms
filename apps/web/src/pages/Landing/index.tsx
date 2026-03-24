@@ -198,7 +198,7 @@ export default function Landing() {
                     <div className="rounded-[20px] border border-[#262A56] p-[25px] bg-[#080A2A] text-center">
                         <div className="w-[50px] h-[50px] rounded-full bg-[#FFE66D] flex items-center justify-center mb-[15px] mx-auto">
                             <img
-                                src="/assets/images/icons/profile-2user-white.svg"
+                                src="/assets/images/icons/profile-circle-black.svg"
                                 className="w-6 h-6"
                                 alt="Students"
                             />
