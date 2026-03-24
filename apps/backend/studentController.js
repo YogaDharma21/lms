@@ -26,6 +26,7 @@ export const getStudents = async (req, res) => {
             return {
                 ...item.toObject(),
                 photo_url: photoUrl + item.photo,
+                totalCourse: item.courses?.length || 0,
             };
         });
 

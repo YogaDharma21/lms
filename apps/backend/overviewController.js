@@ -1,5 +1,6 @@
 import courseModel from "../models/courseModel.js";
 import userModel from "../models/userModel.js";
+import courseDetailModel from "../models/courseDetailModel.js";
 
 export const getOverviews = async (req, res) => {
     try {
@@ -20,100 +21,55 @@ export const getOverviews = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const aggregationPipeline = [
-            {
-                $match: { manager: req.user._id }
-            },
-            {
-                $facet: {
-                    totalCourses: [{ $count: "count" }],
-                    totalStudents: [
-                        { $unwind: { path: "$students", preserveNullAndEmptyArrays: true } },
-                        { $group: { _id: null, count: { $sum: 1 } } }
-                    ],
-                    totalVideos: [
-                        { $unwind: { path: "$details", preserveNullAndEmptyArrays: true } },
-                        {
-                            $lookup: {
-                                from: "coursedetails",
-                                localField: "details",
-                                foreignField: "_id",
-                                as: "detailDocs"
-                            }
-                        },
-                        { $unwind: { path: "$detailDocs", preserveNullAndEmptyArrays: true } },
-                        { $match: { "detailDocs.type": "video" } },
-                        { $group: { _id: null, count: { $sum: 1 } } }
-                    ],
-                    totalTexts: [
-                        { $unwind: { path: "$details", preserveNullAndEmptyArrays: true } },
-                        {
-                            $lookup: {
-                                from: "coursedetails",
-                                localField: "details",
-                                foreignField: "_id",
-                                as: "detailDocs"
-                            }
-                        },
-                        { $unwind: { path: "$detailDocs", preserveNullAndEmptyArrays: true } },
-                        { $match: { "detailDocs.type": "text" } },
-                        { $group: { _id: null, count: { $sum: 1 } } }
-                    ],
-                    coursesList: [
-                        { $skip: skip },
-                        { $limit: limit }
-                    ]
-                }
+        const courses = await courseModel
+            .find({ manager: req.user._id })
+            .select("name thumbnail category students details")
+            .populate({ path: "category", select: "name" })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        const totalCourses = await courseModel.countDocuments({ manager: req.user._id });
+
+        let totalStudentsCount = 0;
+        let totalVideos = 0;
+        let totalTexts = 0;
+
+        for (const course of courses) {
+            totalStudentsCount += course.students?.length || 0;
+            
+            if (course.details && course.details.length > 0) {
+                const details = await courseDetailModel.find({
+                    _id: { $in: course.details }
+                }).lean();
+                
+                details.forEach(detail => {
+                    if (detail.type === "video") totalVideos++;
+                    if (detail.type === "text") totalTexts++;
+                });
             }
-        ];
+        }
 
-        const aggregationResults = await courseModel.aggregate(aggregationPipeline);
-        const result = aggregationResults[0];
-
-        const totalCourses = result.totalCourses[0]?.count || 0;
-        const totalStudentsCount = result.totalStudents[0]?.count || 0;
-        const totalVideos = result.totalVideos[0]?.count || 0;
-        const totalTexts = result.totalTexts[0]?.count || 0;
-        const coursesList = result.coursesList || [];
-
-        const courseIds = coursesList.map(c => c._id);
-
-        const [coursesWithCategory, coursesWithStudents] = await Promise.all([
-            courseModel.find({ _id: { $in: courseIds } })
-                .select("name thumbnail")
-                .populate({ path: "category", select: "name -_id" })
-                .lean(),
-            courseModel.find({ _id: { $in: courseIds } })
-                .select("students")
-                .lean()
-        ]);
-
-        const studentCountsMap = {};
-        coursesWithStudents.forEach(c => {
-            studentCountsMap[c._id.toString()] = c.students?.length || 0;
-        });
-
-        const responseCourses = coursesWithCategory.map((item) => ({
+        const responseCourses = courses.map((item) => ({
             ...item,
             thumbnail_url: imageUrl + "/uploads/courses/" + item.thumbnail,
-            total_students: studentCountsMap[item._id.toString()] || 0,
+            total_students: item.students?.length || 0,
         }));
 
-        const [students, totalStudentsCountQuery] = await Promise.all([
-            userModel
-                .find({
-                    role: "student",
-                    manager: req.user._id,
-                })
-                .select("name courses photo")
-                .skip(skip)
-                .limit(limit)
-                .lean(),
-            userModel.countDocuments({
+        const students = await userModel
+            .find({
                 role: "student",
                 manager: req.user._id,
             })
-        ]);
+            .select("name courses photo")
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        const totalStudentsQuery = await userModel.countDocuments({
+            role: "student",
+            manager: req.user._id,
+        });
 
         const responseStudents = students.map((item) => ({
             ...item,
@@ -131,9 +87,9 @@ export const getOverviews = async (req, res) => {
                     currentPage: page,
                     limit,
                     totalCourses,
-                    totalStudents: totalStudentsCountQuery,
+                    totalStudents: totalStudentsQuery,
                     totalPages: Math.ceil(totalCourses / limit),
-                    totalStudentPages: Math.ceil(totalStudentsCountQuery / limit),
+                    totalStudentPages: Math.ceil(totalStudentsQuery / limit),
                 },
                 courses: responseCourses,
                 students: responseStudents,
