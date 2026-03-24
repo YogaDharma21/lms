@@ -46,3 +46,7 @@ export const mutateStudentSchema = z.object({
 export const addStudentCourseSchema = z.object({
     studentId: objectIdSchema,
 });
+
+export const mutateCategorySchema = z.object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+});
