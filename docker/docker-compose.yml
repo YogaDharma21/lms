@@ -1,16 +1,52 @@
 version: '3.8'
 
 services:
-  # Add services from apps here
-  # Example:
-  # web:
-  #   build: ./apps/web
-  #   ports:
-  #     - "3000:3000"
-  #
-  # backend:
-  #   build: ./apps/backend
-  #   ports:
-  #     - "8080:8080"
+  mongodb:
+    image: mongo:7
+    container_name: lms-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
 
-  # Add more services as needed
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: lms-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://root:rootpassword@mongodb:27017/lms?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+      - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY}
+      - MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY}
+      - MIDTRANS_ENVIRONMENT=${MIDTRANS_ENVIRONMENT:-sanandbox}
+    depends_on:
+      - mongodb
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: lms-web
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+
+volumes:
+  mongodb_data:
