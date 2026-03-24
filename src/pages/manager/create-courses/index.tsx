@@ -297,12 +297,6 @@ export default function ManageCreateCoursePage() {
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
-                        className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                        type="button"
-                    >
-                        Save as Draft
-                    </button>
-                    <button
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                         type="submit"
                         disabled={
@@ -311,7 +305,13 @@ export default function ManageCreateCoursePage() {
                                 : mutateUpdate.isPending
                         }
                     >
-                        Create Now
+                        {data?.course === null
+                            ? mutateCreate.isPending
+                                ? "Creating..."
+                                : "Create Now"
+                            : mutateUpdate.isPending
+                                ? "Saving..."
+                                : "Save Changes"}
                     </button>
                 </div>
                 {errorMessage && (

@@ -110,14 +110,6 @@ export default function ManageStudentCreatePage() {
                         {isEditMode ? "Edit existing student data" : "Create new future for company"}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Link
-                        to="#"
-                        className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                    >
-                        Import from BWA
-                    </Link>
-                </div>
             </header>
             <form
                 onSubmit={handleSubmit(onSubmit)}
@@ -255,12 +247,6 @@ export default function ManageStudentCreatePage() {
                 </div>
                 <div className="flex items-center gap-[14px]">
                     <button
-                        type="button"
-                        className="w-full rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                    >
-                        Save as Draft
-                    </button>
-                    <button
                         type="submit"
                         disabled={
                             isEditMode
@@ -269,7 +255,13 @@ export default function ManageStudentCreatePage() {
                         }
                         className="w-full rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
-                        {isEditMode ? "Update Now" : "Add Now"}
+                        {isEditMode
+                            ? mutateUpdate.isPending
+                                ? "Saving..."
+                                : "Update Now"
+                            : mutateCreate.isPending
+                                ? "Adding..."
+                                : "Add Now"}
                     </button>
                 </div>
                 {errorMessage && (

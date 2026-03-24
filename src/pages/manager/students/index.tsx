@@ -16,12 +16,6 @@ export default function ManageStudentsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Link
-                        to="#"
-                        className="w-fit rounded-full border border-[#060A23] p-[14px_20px] font-semibold text-nowrap"
-                    >
-                        Import File
-                    </Link>
-                    <Link
                         to="/manager/students/create"
                         className="w-fit rounded-full p-[14px_20px] font-semibold text-[#FFFFFF] bg-[#662FFF] text-nowrap"
                     >
@@ -44,48 +38,6 @@ export default function ManageStudentsPage() {
                                 id={item._id}
                             />
                         ))}
-                        <div id="Pagination" className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 bg-[#662FFF] text-white"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    1
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    2
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    3
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    4
-                                </span>
-                            </button>
-                            <button
-                                type="button"
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    5
-                                </span>
-                            </button>
-                        </div>
                     </>
                 ) : (
                     <div className="flex items-center justify-center py-12">

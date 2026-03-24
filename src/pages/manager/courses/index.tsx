@@ -48,52 +48,6 @@ export default function ManageCoursePage() {
                                 />
                             ),
                         )}
-
-                        <div
-                            className="flex items-center gap-3"
-                            id="Pagination"
-                        >
-                            <button
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 bg-[#662FFF] text-white"
-                                type="button"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    1
-                                </span>
-                            </button>
-                            <button
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                                type="button"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    2
-                                </span>
-                            </button>
-                            <button
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                                type="button"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    3
-                                </span>
-                            </button>
-                            <button
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                                type="button"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    4
-                                </span>
-                            </button>
-                            <button
-                                className="flex shrink-0 w-9 h-9 rounded-full items-center justify-center text-center transition-all duration-300 hover:bg-[#662FFF] hover:text-white hover:border-0 border border-[#060A23]"
-                                type="button"
-                            >
-                                <span className="font-semibold text-sm leading-[21px]">
-                                    5
-                                </span>
-                            </button>
-                        </div>
                     </>
                 ) : (
                     <div className="flex items-center justify-center py-12">
