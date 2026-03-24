@@ -1,19 +1,58 @@
-# Scripts
+# LMS Scripts
 
-This folder contains utility scripts for the monorepo.
+This folder contains utility scripts for running the LMS project locally or with Docker.
 
-## Purpose
+## Scripts
 
-- Helper scripts for common tasks
-- Build and deployment automation
-- Development environment setup
+### Docker Scripts
 
-## Usage
+#### `docker.sh`
+Manages Docker containers for the LMS application.
 
-Each script should have its own documentation or `--help` flag.
+```bash
+# Start all services
+./scripts/docker.sh up-bg
 
-## Notes
+# View logs
+./scripts/docker.sh logs
 
-- Scripts are NOT shared code between apps
-- Each app should have its own scripts if needed
-- Keep scripts language-agnostic where possible
+# Stop services
+./scripts/docker.sh down
+
+# See all commands
+./scripts/docker.sh
+```
+
+### Local Scripts
+
+#### `local.sh`
+Manages local development without Docker.
+
+```bash
+# Install dependencies
+./scripts/local.sh install
+
+# Start both servers
+./scripts/local.sh dev
+
+# Start only backend
+./scripts/local.sh dev-be
+
+# Start only web
+./scripts/local.sh dev-web
+
+# Build for production
+./scripts/local.sh build
+```
+
+### `install.sh`
+Installs all dependencies for both backend and web.
+
+### `dev.sh`
+Starts both backend and web development servers simultaneously.
+
+## Requirements
+
+- Node.js
+- Docker & Docker Compose (for docker scripts)
+- MongoDB (either local or via Docker)

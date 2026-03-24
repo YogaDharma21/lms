@@ -1,49 +1,85 @@
 # Docker Configuration
 
-This folder contains Docker configurations for the monorepo.
+This folder contains Docker configurations for running the LMS application.
+
+## Services
+
+- **mongodb**: MongoDB database
+- **backend**: Node.js Express API (port 3000)
+- **web**: React frontend (port 5173)
+
+## Quick Start
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+## Environment Variables
+
+Create a `.env` file in the project root with:
+
+```env
+JWT_SECRET=your-secret-key
+MIDTRANS_SERVER_KEY=your-server-key
+MIDTRANS_CLIENT_KEY=your-client-key
+MIDTRANS_ENVIRONMENT=sandbox
+```
 
 ## Usage
 
 ### Starting all services
 
 ```bash
-docker-compose -f docker/docker-compose.yml up
+docker-compose up -d
 ```
+
+This will start:
+- MongoDB on port 27017
+- Backend API on port 3000
+- Frontend on port 5173
 
 ### Starting specific service
 
 ```bash
-docker-compose -f docker/docker-compose.yml up <service-name>
+docker-compose up -d backend
+docker-compose up -d web
+docker-compose up -d mongodb
+```
+
+### Viewing logs
+
+```bash
+docker-compose logs -f backend
+docker-compose logs -f web
 ```
 
 ### Stopping services
 
 ```bash
-docker-compose -f docker/docker-compose.yml down
+docker-compose down
 ```
 
-## Adding a new service
+### Rebuilding containers
 
-1. Add your service to `docker-compose.yml`
-2. Each app in `/apps/*` should have its own `Dockerfile`
-3. Reference the app directory in the service configuration
-
-Example:
-
-```yaml
-services:
-  web:
-    build: 
-      context: ../apps/web
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
+```bash
+docker-compose build --no-cache
 ```
+
+## URLs
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+- MongoDB: localhost:27017
 
 ## Notes
 
-- This is a placeholder for future docker configurations
-- Each app is responsible for its own Dockerfile
-- The root docker-compose.yml orchestrates all apps
+- Data persists in Docker volumes
+- Frontend proxy handles API calls to backend
+- Hot reload enabled via volume mounts
